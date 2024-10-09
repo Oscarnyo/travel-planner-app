@@ -4,7 +4,6 @@ import map from "../assets/icons/map.png";
 import expense from "../assets/icons/card.png";
 import profile from "../assets/icons/profile.png";
 
-
 export default {
     home,
     explore,

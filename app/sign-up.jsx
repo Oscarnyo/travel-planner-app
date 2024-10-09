@@ -59,6 +59,7 @@ const SignUp = () => {
             value={username}
             handleChangeText={setUserame}
             otherStyles="mt-5"
+            titleColor="text-gray-500"
           />
           <FormField
             title="Email"
@@ -66,12 +67,14 @@ const SignUp = () => {
             handleChangeText={setEmail}
             otherStyles="mt-5"
             keyboardType="email-address"
+            titleColor="text-gray-500"
           />
           <FormField
             title="Password"
             value={password}
             handleChangeText={setPassword}
             otherStyles="mt-5"
+            titleColor="text-gray-500"
           />
           
           <CustomButton

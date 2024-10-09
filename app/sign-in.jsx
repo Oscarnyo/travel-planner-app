@@ -17,17 +17,15 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   
   const handleSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
-
-    setIsLoading(true);
     try {
       await signIn(email, password);
       router.replace('/(tabs)/planner');
     } catch (error) {
-      Alert.alert('Error', error.message);
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-email') {
+        Alert.alert('Error', 'Invalid email or password');
+      } else {
+        Alert.alert('Error', error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -56,12 +54,14 @@ const SignIn = () => {
             handleChangeText={setEmail}
             otherStyles="mt-5"
             keyboardType="email-address"
+            titleColor="text-gray-500"
           />
           <FormField
             title="Password"
             value={password}
             handleChangeText={setPassword}
             otherStyles="mt-5"
+            titleColor="text-gray-500"
           />
           
           <CustomButton
