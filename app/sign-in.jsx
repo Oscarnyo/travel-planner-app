@@ -1,4 +1,4 @@
-import { View, Text,ScrollView, Image, Alert } from 'react-native'
+import { View, Text,ScrollView, Image, Alert, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
@@ -10,6 +10,8 @@ import CustomButton from '../components/CustomButton'
 import { Link, router, useRouter } from 'expo-router'
 
 import { signIn } from '../firebaseConfig';
+import { sendPasswordResetEmail } from '../firebaseConfig';
+
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -30,6 +32,19 @@ const SignIn = () => {
       setIsLoading(false);
     }
   }
+  
+  const handleForgotPassword = async () => {
+    if (!email) {
+      Alert.alert('Error', 'Please enter your email address');
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(email);
+      Alert.alert('Success', 'Password reset email sent. Please check your inbox.');
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
   
   return (
     <SafeAreaView className="h-full bg-backBlue">
@@ -63,6 +78,10 @@ const SignIn = () => {
             otherStyles="mt-5"
             titleColor="text-gray-500"
           />
+          
+          <Link href="/forgot-password" className='text-secondary text-right mt-2'>
+            <Text>Forgot Password?</Text>
+          </Link>
           
           <CustomButton
             title='Sign in'

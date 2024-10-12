@@ -3,6 +3,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { initializeAuth, getAuth,getReactNativePersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, EmailAuthProvider,reauthenticateWithCredential, updatePassword } from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { sendPasswordResetEmail as firebaseSendPasswordResetEmail } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -69,6 +70,10 @@ export const changePassword = async (oldPassword, newPassword) => {
     }
     throw error;
   }
+};
+
+export const sendPasswordResetEmail = (email) => {
+  return firebaseSendPasswordResetEmail(auth, email);
 };
 
 export { auth, db };

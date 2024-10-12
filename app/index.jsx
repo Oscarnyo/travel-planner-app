@@ -3,6 +3,8 @@ import { AuthContext } from '../context/authContext';
 import { Redirect } from 'expo-router';
 import { View, ActivityIndicator } from 'react-native';
 
+import '../global';
+
 export default function App() {
   const { user, loading } = useContext(AuthContext);
 
@@ -15,7 +17,7 @@ export default function App() {
   }
 
   if (user) {
-    return <Redirect href="/(tabs)/profile" />;
+    return <Redirect href="/(tabs)/map" />;
   } else {
     return <Redirect href="/sign-in" />;
   }
