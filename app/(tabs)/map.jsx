@@ -8,11 +8,13 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { GOOGLE_MAPS_API_KEY } from '@env';
 
 import { Keyboard, TouchableWithoutFeedback } from 'react-native'
+import { router } from 'expo-router'
 
 const Map = () => {
   const [location, setLocation] = useState(null)
   const [errorMsg, setErrorMsg] = useState(null)
   const [selectedPlace, setSelectedPlace] = useState(null)
+  const [favorites, setFavorites] = useState([]);
   const mapRef = React.useRef(null);
 
   useEffect(() => {
@@ -139,65 +141,68 @@ const Map = () => {
     }}>
       <View className="flex-1">
       <GooglePlacesAutocomplete
-  placeholder='Search'
-  onPress={(data, details = null) => {
-    const selectedPlace = {
-      name: details.name,
-      address: details.formatted_address,
-      coordinate: {
-        latitude: details.geometry.location.lat,
-        longitude: details.geometry.location.lng,
-      },
-      photoReference: details.photos && details.photos[0] ? details.photos[0].photo_reference : null
-    };
-    setSelectedPlace(selectedPlace);
-    mapRef.current.animateToRegion({
-      latitude: selectedPlace.coordinate.latitude,
-      longitude: selectedPlace.coordinate.longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    });
-  }}
-  query={{
-    key: GOOGLE_MAPS_API_KEY,
-    language: 'en',
-  }}
-  fetchDetails={true}
-  styles={{
-    container: {
-      position: 'absolute',
-      top: 10,
-      left: 10,
-      right: 10,
-      zIndex: 1,
-    },
-    textInputContainer: {
-      backgroundColor: '#f6f6f6',
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: '#ddd',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    textInput: {
-      height: 45,
-      color: '#5d5d5d',
-      fontSize: 16,
-      borderRadius: 12,
-      paddingHorizontal: 15,
-      paddingRight: 35, // Add space for the clear button
-    },
-    listView: {
-      backgroundColor: '#f6f6f6',
-      borderRadius: 12,
-      marginTop: 5,
-    }
-  }}
-  renderRightButton={() => (
-    <TouchableOpacity
+          placeholder='Search'
+          onPress={(data, details = null) => {
+          const selectedPlace = {
+            name: details.name,
+            address: details.formatted_address,
+            coordinate: {
+            latitude: details.geometry.location.lat,
+            longitude: details.geometry.location.lng,
+          },
+            photoReference: details.photos && details.photos[0] ? details.photos[0].photo_reference : null
+          };
+          setSelectedPlace(selectedPlace);
+          mapRef.current.animateToRegion({
+            latitude: selectedPlace.coordinate.latitude,
+            longitude: selectedPlace.coordinate.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+            });
+          }}
+          query={{
+          key: GOOGLE_MAPS_API_KEY,
+          language: 'en',
+          }}
+          fetchDetails={true}
+          styles={{
+            container: {
+              position: 'absolute',
+              top: 6,
+              left: 10,
+              right: 10,
+              zIndex: 1,
+              width: '80%',
+            },
+            textInputContainer: {
+            backgroundColor: '#f6f6f6',
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: '#ddd',
+            // shadowColor: '#000',
+            // shadowOffset: { width: 0, height: 2 },
+            // shadowOpacity: 0.1,
+            // shadowRadius: 4,
+            // elevation: 3,
+          },
+          textInput: {
+            height: 45,
+            color: '#5d5d5d',
+            fontSize: 16,
+            borderRadius: 12,
+            paddingHorizontal: 15,
+            paddingRight: 35, // Add space for the clear button
+          },
+          listView: {
+          backgroundColor: '#f6f6f6',
+          borderRadius: 12,
+          marginTop: 5,
+        }
+      }}
+      
+      // Clear button
+      renderRightButton={() => (
+      <TouchableOpacity
       style={{
         position: 'absolute',
         right: 10,
@@ -210,10 +215,33 @@ const Map = () => {
     >
       <Ionicons name="close-circle" size={24} color="#5d5d5d" />
     </TouchableOpacity>
-  )}
-  ref={(instance) => { this.googlePlacesAutocomplete = instance }}
-/>
-        {errorMsg ? (
+    )}
+    
+    ref={(instance) => { this.googlePlacesAutocomplete = instance }}
+    />
+    
+    {/*favorites button */}
+    <TouchableOpacity
+        className="absolute right-[10px] top-[10px] z-[2] bg-white rounded-[10px] p-[10px]"
+      //   style={{
+      //   position: 'absolute',
+      //   right: 10,
+      //   top: 10,
+      //   zIndex: 2,
+      //   backgroundColor: '#f6f6f6',
+      //   borderRadius: 12,
+      //   padding: 10,
+      // }}
+      onPress={() => {
+        // Handle favorite button press
+        router.push('/(screens)/favourite');
+      }}
+      activeOpacity={1}
+      >
+      <Ionicons name="star" size={24} color="#FFD700" />
+    </TouchableOpacity>
+    
+      {errorMsg ? (
           <Text className="text-red-500 text-center">{errorMsg}</Text>
         ) : location ? (
           <View className="flex-1">
