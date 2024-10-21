@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Linking, Image } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { View, Text, TouchableOpacity, Linking, Image, Alert, ToastAndroid} from 'react-native'
+import React, { useState, useEffect, useContext } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MapView, { Marker, Callout }  from 'react-native-maps'
 import * as Location from 'expo-location'
@@ -9,6 +9,10 @@ import { GOOGLE_MAPS_API_KEY } from '@env';
 
 import { Keyboard, TouchableWithoutFeedback } from 'react-native'
 import { router } from 'expo-router'
+import { addToFavorites, removeFromFavorites, checkPlaceInFavorites, getFavorites } from '../../firebaseConfig';
+import { AuthContext } from '../../context/authContext';
+import { onSnapshot, collection } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
 
 const Map = () => {
   const [location, setLocation] = useState(null)
@@ -16,7 +20,19 @@ const Map = () => {
   const [selectedPlace, setSelectedPlace] = useState(null)
   const [favorites, setFavorites] = useState([]);
   const mapRef = React.useRef(null);
-
+  const { user } = useContext(AuthContext);
+  
+  useEffect(() => {
+    if (user) {
+      const unsubscribe = onSnapshot(collection(db, 'users', user.uid, 'favorites'), (snapshot) => {
+        const updatedFavorites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setFavorites(updatedFavorites);
+      });
+  
+      return () => unsubscribe();
+    }
+  }, [user]);
+  
   useEffect(() => {
     console.log('Selected Place:', selectedPlace)
   }, [selectedPlace])
@@ -34,7 +50,26 @@ const Map = () => {
       setLocation(location)
     })()
   }, [])
-
+  
+  const handleToggleFavorite = async (place) => {
+    if (!user) {
+      Alert.alert('Error', 'You must be logged in to manage favorites');
+      return;
+    }
+    if (!place || !place.id) {
+      console.error('Invalid place object:', place);
+      Alert.alert('Error', 'Unable to manage this favorite');
+      return;
+    }
+    try {
+      await removeFromFavorites(user.uid, place.id);
+      // The favorites list will be automatically updated by the onSnapshot listener
+    } catch (error) {
+      console.error('Error removing favorite:', error);
+      Alert.alert('Error', 'Failed to remove favorite');
+    }
+  };
+  
   const handleMapPress = async (event) => {
     const { coordinate, placeId } = event.nativeEvent;
     console.log('Pressed coordinate:', coordinate, 'Place ID:', placeId);
@@ -65,15 +100,30 @@ const Map = () => {
     }
   };
 
-  const PlaceDetailsCard = ({ place }) => {
+  const PlaceDetailsCard = ({ place, onToggleFavorite, favorites }) => {
     if (!place) return null;
   
     const [isFavorite, setIsFavorite] = useState(false);
   
-    const openInGoogleMaps = () => {
-      const encodedAddress = encodeURIComponent(place.address);
-      const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
-      Linking.openURL(url);
+    useEffect(() => {
+      const favorite = favorites.find(fav => fav.name === place.name);
+      setIsFavorite(!!favorite);
+      if (favorite) {
+        place.id = favorite.id; // Ensure the place object has the correct id
+      }
+    }, [favorites, place]);
+  
+    const toggleFavorite = async () => {
+      if (isFavorite) {
+        await onToggleFavorite(place);
+        setIsFavorite(false);
+        ToastAndroid.show('Removed from favorites', ToastAndroid.SHORT);
+      } else {
+        const placeWithId = { ...place, id: place.id || `place_${Date.now()}` };
+        await addToFavorites(user.uid, placeWithId);
+        setIsFavorite(true);
+        ToastAndroid.show('Added to favorites', ToastAndroid.SHORT);
+      }
     };
   
     const getPlaceImage = () => {
@@ -83,12 +133,14 @@ const Map = () => {
       return null;
     };
   
-    const toggleFavorite = () => {
-      setIsFavorite(!isFavorite);
+    const openInGoogleMaps = () => {
+      const encodedAddress = encodeURIComponent(place.address);
+      const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+      Linking.openURL(url);
     };
   
     return (
-      <View className="absolute bottom-7 left-4 right-4 bg-white p-4 rounded-lg shadow-md h-[130px] flex-row">
+      <View className="absolute bottom-7 left-4 right-4 bg-white p-4 rounded-[20px] shadow-md h-[130px] flex-row">
         <View className="w-1/3 mr-4">
           {getPlaceImage() ? (
             <Image
@@ -167,23 +219,23 @@ const Map = () => {
           fetchDetails={true}
           styles={{
             container: {
-              position: 'absolute',
-              top: 6,
-              left: 10,
-              right: 10,
-              zIndex: 1,
-              width: '80%',
-            },
-            textInputContainer: {
-            backgroundColor: '#f6f6f6',
+            position: 'absolute',
+            top: 10,
+            left: 10,
+            right: 10,
+            zIndex: 1,
+            width: '80%',
+          },
+          textInputContainer: {
             borderRadius: 12,
-            borderWidth: 1,
-            borderColor: '#ddd',
-            // shadowColor: '#000',
-            // shadowOffset: { width: 0, height: 2 },
-            // shadowOpacity: 0.1,
-            // shadowRadius: 4,
-            // elevation: 3,
+            shadowColor: "#000",
+            shadowOffset: {
+              width: 0,
+              height: 1,
+            },
+            shadowOpacity: 0.20,
+            shadowRadius: 3.84,
+            elevation: 5,
           },
           textInput: {
             height: 45,
@@ -191,55 +243,57 @@ const Map = () => {
             fontSize: 16,
             borderRadius: 12,
             paddingHorizontal: 15,
-            paddingRight: 35, // Add space for the clear button
+            paddingRight: 35,
+            backgroundColor:'white'
           },
           listView: {
-          backgroundColor: '#f6f6f6',
-          borderRadius: 12,
-          marginTop: 5,
-        }
+            backgroundColor: '#f6f6f6',
+            borderRadius: 12,
+            marginTop: 5,
+          }
       }}
       
       // Clear button
       renderRightButton={() => (
       <TouchableOpacity
-      style={{
-        position: 'absolute',
-        right: 10,
-        top: 10,
-        zIndex: 2,
-      }}
-      onPress={() => {
-        this.googlePlacesAutocomplete.setAddressText('');
-      }}
-    >
-      <Ionicons name="close-circle" size={24} color="#5d5d5d" />
-    </TouchableOpacity>
-    )}
+        style={{
+          position: 'absolute',
+          right: 10,
+          top: 10,
+          zIndex: 2,
+        }}
+        onPress={() => {
+          this.googlePlacesAutocomplete.setAddressText('');
+        }}
+        >
+        <Ionicons name="close-circle" size={24} color="#5d5d5d" />
+      </TouchableOpacity>
+      )}
     
-    ref={(instance) => { this.googlePlacesAutocomplete = instance }}
-    />
+      ref={(instance) => { this.googlePlacesAutocomplete = instance }}
+      />
     
-    {/*favorites button */}
-    <TouchableOpacity
+      {/*favorites page button */}
+      <TouchableOpacity
         className="absolute right-[10px] top-[10px] z-[2] bg-white rounded-[10px] p-[10px]"
-      //   style={{
-      //   position: 'absolute',
-      //   right: 10,
-      //   top: 10,
-      //   zIndex: 2,
-      //   backgroundColor: '#f6f6f6',
-      //   borderRadius: 12,
-      //   padding: 10,
-      // }}
-      onPress={() => {
+        style={{
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 5,
+        }}
+        onPress={() => {
         // Handle favorite button press
         router.push('/(screens)/favourite');
-      }}
-      activeOpacity={1}
+        }}
+        activeOpacity={1}
       >
       <Ionicons name="star" size={24} color="#FFD700" />
-    </TouchableOpacity>
+      </TouchableOpacity>
     
       {errorMsg ? (
           <Text className="text-red-500 text-center">{errorMsg}</Text>
@@ -268,7 +322,13 @@ const Map = () => {
                 />
               )}
             </MapView>
-            <PlaceDetailsCard place={selectedPlace} />
+            
+            <PlaceDetailsCard 
+            place={selectedPlace} 
+            onToggleFavorite={handleToggleFavorite} 
+            favorites={favorites} 
+            />
+            
           </View>
         ) : (
           <Text className="text-center">Loading...</Text>

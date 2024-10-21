@@ -29,7 +29,7 @@ const TabsLayout = () => {
               <Image
                 source={iconSource}
                 resizeMode='contain'
-                style={{ width: 30, height: 30, tintColor: focused ? '#020619' : 'gray'}}
+                style={{ width: 28, height: 28, tintColor: focused ? '#020619' : 'gray'}}
               />
             );
           },

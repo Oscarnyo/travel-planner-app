@@ -1,9 +1,10 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { initializeAuth, getAuth,getReactNativePersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, EmailAuthProvider,reauthenticateWithCredential, updatePassword } from "firebase/auth";
+import { initializeAuth, getAuth, getReactNativePersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, getDoc, query, where } from "firebase/firestore";
 import { sendPasswordResetEmail as firebaseSendPasswordResetEmail } from "firebase/auth";
+import { v4 as uuidv4 } from 'uuid';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -75,5 +76,69 @@ export const changePassword = async (oldPassword, newPassword) => {
 export const sendPasswordResetEmail = (email) => {
   return firebaseSendPasswordResetEmail(auth, email);
 };
+
+export const addToFavorites = async (userId, place) => {
+  try {
+    if (!place.id) {
+      place.id = uuidv4(); // Generate a unique ID if it doesn't exist
+    }
+    const favoritesRef = collection(db, 'users', userId, 'favorites');
+    const q = query(favoritesRef, where("name", "==", place.name));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      const favoriteRef = doc(db, 'users', userId, 'favorites', place.id);
+      await setDoc(favoriteRef, place);
+      return true; // Return true if the place was added
+    }
+    return false; // Return false if the place already exists
+  } catch (error) {
+    console.error('Error adding to favorites:', error);
+    throw error;
+  }
+};
+
+export const removeFromFavorites = async (userId, placeId) => {
+  try {
+    if (!userId || !placeId) {
+      console.error('Invalid userId or placeId:', { userId, placeId });
+      throw new Error('Invalid userId or placeId');
+    }
+    console.log('Removing favorite:', userId, placeId);
+    const favoriteRef = doc(db, 'users', userId, 'favorites', placeId);
+    await deleteDoc(favoriteRef);
+    console.log('Favorite removed successfully');
+  } catch (error) {
+    console.error('Error removing from favorites:', error);
+    throw error;
+  }
+};
+
+export const getFavorites = async (userId) => {
+  try {
+    const favoritesRef = collection(db, 'users', userId, 'favorites');
+    const querySnapshot = await getDocs(favoritesRef);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error getting favorites:', error);
+    throw error;
+  }
+};
+
+export const checkPlaceInFavorites = async (userId, placeId) => {
+  try {
+    if (!userId || !placeId) {
+      console.error('Invalid userId or placeId');
+      return false;
+    }
+    const favoriteRef = doc(db, 'users', userId, 'favorites', placeId);
+    const docSnap = await getDoc(favoriteRef);
+    return docSnap.exists();
+  } catch (error) {
+    console.error('Error checking place in favorites:', error);
+    return false;
+  }
+};
+
 
 export { auth, db };
