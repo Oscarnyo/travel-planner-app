@@ -186,7 +186,7 @@ const Map = () => {
   };
   
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 bg-backBlue">
       <TouchableWithoutFeedback onPress={() => {
       Keyboard.dismiss();
       this.googlePlacesAutocomplete?.blur();

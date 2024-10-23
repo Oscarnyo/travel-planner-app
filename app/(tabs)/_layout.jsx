@@ -29,11 +29,11 @@ const TabsLayout = () => {
               <Image
                 source={iconSource}
                 resizeMode='contain'
-                style={{ width: 28, height: 28, tintColor: focused ? '#020619' : 'gray'}}
+                style={{ width: 28, height: 28, tintColor: focused ? '#367AFF' : 'gray'}}
               />
             );
           },
-          tabBarActiveTintColor: '#020619',
+          tabBarActiveTintColor: '#367AFF',
           tabBarInactiveTintColor: 'grey',
           tabBarStyle:{ 
             height: 60,
