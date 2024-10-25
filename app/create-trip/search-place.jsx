@@ -11,6 +11,10 @@ import { router } from 'expo-router';
 const SearchPlace = () => {
   const googlePlacesAutocompleteRef = useRef(null);
   const {tripData, setTripData} = useContext(createTripContext); 
+  
+  useEffect(() => {
+    console.log(tripData)
+  },[tripData])
 
   return (
     <SafeAreaView className="bg-backBlue flex-1">

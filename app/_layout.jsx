@@ -20,6 +20,8 @@ const RootLayout = () => {
       <Stack.Screen name="(screens)/favourite" options={{ headerShown: false }} />
       <Stack.Screen name="create-trip/search-place" options={{ headerShown: true, headerTransparent:true, headerTitle:'Search'}} />
       <Stack.Screen name="create-trip/select-Traveler" options={{ headerShown: true, headerTransparent:true, headerTitle:'Traveler'}} />
+      <Stack.Screen name="create-trip/select-Dates" options={{ headerShown: true, headerTransparent:true, headerTitle:'Dates'}} />
+      <Stack.Screen name="create-trip/select-Budget" options={{ headerShown: true, headerTransparent:true, headerTitle:'Budget'}} />
     </Stack>
     </createTripContext.Provider>
   </AuthProvider>
