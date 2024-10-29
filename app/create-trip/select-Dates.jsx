@@ -44,11 +44,11 @@ const SelectDates = () => {
       <View className='p-6 pt-16'>
         
         <Text
-          className='text-[35px] font-bold mt-5'>
+          className='text-[35px] font-bold mt-3'>
           Travel Dates
         </Text>
         
-        <View className='mt-6'>
+        <View className='mt-6 mb-5'>
           <CalendarPicker 
           onDateChange={onDateChange}
           allowRangeSelection={true}
@@ -64,7 +64,7 @@ const SelectDates = () => {
         <CustomButton
             title='Continue'
             handlePress={OnDateSelectionContinue}
-            containerStyles="mt-12 w-full h-[55px]"
+            containerStyles="mt-12 w-[320px] h-[55px] self-center"
             textStyles="text-[20px]"
           />
         

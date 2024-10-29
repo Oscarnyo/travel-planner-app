@@ -1,13 +1,13 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const OptionCard = ({option, selectedTraveler}) => {
+const OptionCard = ({option, selectedOption}) => {
   return (
     <View 
-    className='p-6 flex-row justify-between bg-[#d3dfee] rounded-2xl'
+    className='p-6 flex-row justify-between bg-[#d9dbe6] rounded-2xl'
     style={[{
         
-    }, selectedTraveler?.id == option?.id&&{borderWidth:1.5}]}>
+    }, selectedOption?.id == option?.id&&{borderWidth:2}]}>
     
         <View>
             <Text className='text-[20px] font-medium'>

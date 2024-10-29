@@ -27,12 +27,12 @@ const SelectTraveler = () => {
       <View className='p-6 pt-16'>
         
         <Text
-          className='text-[35px] font-bold mt-5'>
+          className='text-[35px] font-bold mt-3'>
           Who's Traveling
         </Text>
         
         <View className='mt-5'>
-          <Text className='text-[20px] font-bold'>
+          <Text className='text-[20px] font-bold ml-1'>
             Choose your traveler
           </Text>
           
@@ -44,7 +44,7 @@ const SelectTraveler = () => {
               onPress={() => setSelectedTraveler(item)}
               activeOpacity={1}
               >
-                <OptionCard option={item} selectedTraveler={selectedTraveler}/>
+                <OptionCard option={item} selectedOption={selectedTraveler}/>
                 
               </TouchableOpacity>
             )}
@@ -54,7 +54,7 @@ const SelectTraveler = () => {
         <CustomButton
             title='Continue'
             handlePress={() => router.push('/create-trip/select-Dates')}
-            containerStyles="mt-6 w-full h-[55px]"
+            containerStyles="mt-7 w-[320px] h-[55px] self-center"
             textStyles="text-[20px]"
           />
         
