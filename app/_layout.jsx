@@ -24,6 +24,7 @@ const RootLayout = () => {
       <Stack.Screen name="create-trip/select-Budget" options={{ headerShown: true, headerTransparent:true, headerTitle:''}} />
       <Stack.Screen name="create-trip/review-Trip" options={{ headerShown: true, headerTransparent:true, headerTitle:''}} />
       <Stack.Screen name="create-trip/generate-Trip" options={{ headerShown: false, headerTransparent:true, headerTitle:''}} />
+      <Stack.Screen name="trip-details/index" options={{ headerShown: false, headerTransparent:true, headerTitle:''}} />
     </Stack>
     </createTripContext.Provider>
   </AuthProvider>
