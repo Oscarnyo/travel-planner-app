@@ -4,8 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import StartNewTripCard from '../../components/MyTrips/StartNewTripCard';
 import {db, auth} from '../../firebaseConfig';
-import { collection } from 'firebase/firestore';
-import { getDocs, query, where } from 'firebase/firestore';
+import {collection, getDocs, query, where, onSnapshot } from 'firebase/firestore';
 import { set } from 'date-fns';
 import UserTripList from '../../components/MyTrips/UserTripList';
 import { router } from 'expo-router';
@@ -17,38 +16,30 @@ const planner = () => {
   const [loading, setLoading] = useState(false)
   
   useEffect(() => {
-    user && GetMyTrips()
-  },[user])
-  
-  const GetMyTrips = async () => {
-    setLoading(true)
-    setUserTrips([])
-    const q = query(collection(db, "users"), where ("userEmail", "==", user?.email));
-    const querySnapshot = await getDocs(q);
-    
-    let trips = [];
-    querySnapshot.forEach((doc) => {
-      trips.push(doc.data());
-    });
-  
-    // Get current date for comparison
-    const now = new Date();
-  
-    // Sort trips by how close the start date is to current date
-    trips.sort((a, b) => {
-      const dateA = new Date(JSON.parse(a.tripData).startDate);
-      const dateB = new Date(JSON.parse(b.tripData).startDate);
+    if (user) {
+      const q = query(collection(db, "users"), where("userEmail", "==", user?.email));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        let trips = [];
+        querySnapshot.forEach((doc) => {
+          trips.push(doc.data());
+        });
+        
+        // Sort trips by closest date
+        const now = new Date();
+        trips.sort((a, b) => {
+          const dateA = new Date(JSON.parse(a.tripData).startDate);
+          const dateB = new Date(JSON.parse(b.tripData).startDate);
+          const diffA = Math.abs(dateA - now);
+          const diffB = Math.abs(dateB - now);
+          return diffA - diffB;
+        });
+        
+        setUserTrips(trips);
+      });
       
-      // Calculate difference from now
-      const diffA = Math.abs(dateA - now);
-      const diffB = Math.abs(dateB - now);
-      
-      return diffA - diffB; // Closest dates first
-    });
-    
-    setUserTrips(trips);
-    setLoading(false)
-  }
+      return () => unsubscribe();
+    }
+  }, [user]);
   
   return (
     <SafeAreaView edges={['top']} className="bg-backBlue flex-1">

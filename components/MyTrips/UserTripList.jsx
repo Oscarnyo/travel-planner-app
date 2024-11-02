@@ -1,4 +1,4 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import moment from 'moment'
 import CustomButton from '../../components/CustomButton';
@@ -6,11 +6,39 @@ import { router } from 'expo-router';
 import UserTripCard from './UserTripCard';
 import { GOOGLE_MAPS_API_KEY } from '@env';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { deleteDoc, doc } from 'firebase/firestore'
+import { db } from '../../firebaseConfig'
+
 
 const UserTripList = ({userTrips}) => {
   
   const LatestTrip=JSON.parse(userTrips[0].tripData)
   
+  const handleDelete = async () => {
+    Alert.alert(
+      "Delete Trip",
+      "Are you sure you want to delete this trip?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            try {
+              await deleteDoc(doc(db, "users", userTrips[0].docId));
+              // No need for manual refresh since we're using onSnapshot
+            } catch (error) {
+              console.error("Error deleting trip:", error);
+              Alert.alert("Error", "Failed to delete trip");
+            }
+          },
+          style: "destructive"
+        }
+      ]
+    );
+  }
   
   return(
     <View>
@@ -27,9 +55,18 @@ const UserTripList = ({userTrips}) => {
         />
         }
         <View className=' mt-2 '>
+          <View className='flex-row justify-between '>
             <Text
             className="font-medium text-[24px] ml-[2px]"
-            >{userTrips[0]?.tripPlan?.location}</Text>
+            >{userTrips[0]?.tripPlan?.location}
+            </Text>
+            <TouchableOpacity 
+                    className='p-2'
+                    onPress={handleDelete}
+              >
+              <Ionicons name="trash-outline" size={20} color="#FF3B30" />
+            </TouchableOpacity>
+          </View>
             
             <View className=' flex-row justify-between mt-1'>
             
@@ -40,6 +77,7 @@ const UserTripList = ({userTrips}) => {
                   > {moment(LatestTrip.startDate).format('DD MMM yyyy')}
                 </Text>
               </View>
+              
               <View className='flex-row items-center'>
                 <Ionicons name="people-sharp" size={18} color="#367AFF" />
                 <Text
