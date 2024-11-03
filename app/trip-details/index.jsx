@@ -8,10 +8,14 @@ import FlightInfo from '../../components/TripDetails/FlightInfo';
 import HotelList from '../../components/TripDetails/HotelList';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import PlannedTrip from '../../components/TripDetails/PlannedTrip';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
+
 
 const TripsDetails = () => {
     const {trip} = useLocalSearchParams();
     const [tripDetails, setTripDetails] = useState(null);
+    
     
     const formatData = (data) => {
         try {
@@ -26,12 +30,35 @@ const TripsDetails = () => {
         if (trip) {
             try {
                 const parsedTrip = JSON.parse(trip);
-                setTripDetails(parsedTrip);
+                setTripDetails({
+                    ...parsedTrip,
+                    docId: parsedTrip.docId || null
+                });
+                
+                // Set up real-time listener
+                const tripRef = doc(db, "users", parsedTrip.docId);
+                const unsubscribe = onSnapshot(tripRef, (doc) => {
+                    if (doc.exists()) {
+                        setTripDetails({
+                            ...doc.data(),
+                            docId: doc.id
+                        });
+                    }
+                });
+                
+                return () => unsubscribe();
             } catch (error) {
                 console.error('Error parsing trip:', error);
             }
         }
     }, [trip]);
+    
+    // Add this debug log
+    useEffect(() => {
+        if (tripDetails) {
+            console.log("Itinerary Data:", tripDetails?.tripPlan?.itinerary);
+        }
+    }, [tripDetails]);
     
     if (!tripDetails) {
         return (
@@ -43,7 +70,7 @@ const TripsDetails = () => {
     
     return tripDetails&&(
         <SafeAreaView className="bg-backBlue flex-1">
-            <ScrollView contentContainerStyle={{ paddingBottom: 50 }}> 
+            <ScrollView contentContainerStyle={{ paddingBottom: 50 }} > 
                 <View>
                     <Image 
                     source={{
@@ -84,9 +111,12 @@ const TripsDetails = () => {
                         <HotelList hotelList={tripDetails?.tripPlan?.hotel_options}/>
                     
                         {/* Itinerary plan */}
+                        {tripDetails?.tripPlan?.daily_plan && Array.isArray(tripDetails.tripPlan.daily_plan) && (
                         <PlannedTrip 
-                            details={tripDetails?.tripPlan?.daily_plan}
+                            details={tripDetails.tripPlan.daily_plan}
+                            tripDetails={tripDetails}
                         />
+                        )}
                         
                     </View>
 

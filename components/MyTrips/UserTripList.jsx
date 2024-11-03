@@ -92,7 +92,7 @@ const UserTripList = ({userTrips}) => {
               handlePress={() => router.push({pathname:'/trip-details',params:{
                 trip:JSON.stringify(userTrips[0])
               }})}
-              containerStyles=" mt-3 w-[405px] h-[50px] self-center mb-3"
+              containerStyles=" mt-3 w-full h-[50px] self-center mb-3"
               textStyles="text-[20px]"
             />
         </View>

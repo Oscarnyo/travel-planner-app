@@ -65,6 +65,7 @@ const SearchPlace = () => {
               color: '#5d5d5d',
               fontSize: 16,
               borderRadius: 20,
+              selfAlign: 'center',
             },
             listView: {
               backgroundColor: 'white',

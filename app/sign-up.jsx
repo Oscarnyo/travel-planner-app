@@ -40,11 +40,11 @@ const SignUp = () => {
   return (
     <SafeAreaView className="h-full bg-backBlue">
       <ScrollView>
-        <View className="w-full justify-center h-full px-4  mx-1 ">
+        <View className="w-full justify-center h-full px-4 ">
           <Image 
             source={images.signIn}
             resizeMode='contain'
-            className="w-[400px] h-[300px]"
+            className="w-[400px] h-[300px] self-center"
           />
           
           <Text className="text-3xl text-black text-semibold font-bold">
@@ -80,7 +80,7 @@ const SignUp = () => {
           <CustomButton
             title='Sign up'
             handlePress={handleSignUp}
-            containerStyles="mt-7"
+            containerStyles="mt-7 h-[50px]"
             isLoading={isLoading}
           />
           

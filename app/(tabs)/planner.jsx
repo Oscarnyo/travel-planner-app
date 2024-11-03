@@ -1,6 +1,6 @@
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native'
 import React, {useEffect, useState} from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import StartNewTripCard from '../../components/MyTrips/StartNewTripCard';
 import {db, auth} from '../../firebaseConfig';
@@ -8,12 +8,15 @@ import {collection, getDocs, query, where, onSnapshot } from 'firebase/firestore
 import { set } from 'date-fns';
 import UserTripList from '../../components/MyTrips/UserTripList';
 import { router } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
 
 const planner = () => {
   const [userTrips, setUserTrips] = useState([])
   const user = auth.currentUser
   const [loading, setLoading] = useState(false)
+  
+  
   
   useEffect(() => {
     if (user) {
@@ -42,10 +45,11 @@ const planner = () => {
   }, [user]);
   
   return (
-    <SafeAreaView edges={['top']} className="bg-backBlue flex-1">
+    
+    <SafeAreaView className="bg-backBlue flex-1">
       <View className="flex-1">
         {/* Header */}
-        <View className="px-5 py-2 bg-backBlue">
+        <View className="px-5 bg-backBlue mt-2">
           <View className="flex flex-row items-center justify-between">
             <Text className="text-[30px] font-bold">My Trips</Text>
             <Ionicons name="add-circle" size={40} color="#367AFF" 
@@ -68,6 +72,7 @@ const planner = () => {
           }
         </ScrollView>
       </View>
+      <StatusBar style="dark" backgroundColor="#E5E8F8" />
     </SafeAreaView>
   )
 }

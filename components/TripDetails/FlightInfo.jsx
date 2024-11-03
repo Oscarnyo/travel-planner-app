@@ -29,7 +29,7 @@ const FlightInfo = ({flightData}) => {
         <CustomButton 
         title='Book Flight'
         handlePress={handleBooking}
-        containerStyles='w-[115px] '
+        containerStyles='w-[115px] rounded-lg'
         textStyles='text-[15px]'
       />
       </View>

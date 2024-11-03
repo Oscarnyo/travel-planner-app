@@ -119,7 +119,7 @@ const profile = () => {
             <CustomButton
               title="Logout"
               handlePress={handleLogout}
-              containerStyles="bg-red-500 mb-8 w-[220px]"
+              containerStyles="bg-red-500 mb-8 w-[220px] h-[50px]"
               textStyles="text-lg text-[20px]"
             />
           </View>
