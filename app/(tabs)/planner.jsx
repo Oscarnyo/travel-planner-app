@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, ScrollView } from 'react-native'
+import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -52,9 +52,9 @@ const planner = () => {
         <View className="px-5 bg-backBlue mt-2">
           <View className="flex flex-row items-center justify-between">
             <Text className="text-[30px] font-bold">My Trips</Text>
-            <Ionicons name="add-circle" size={40} color="#367AFF" 
-              onPress={() => router.push('/create-trip/search-place')} 
-            />
+            <TouchableOpacity onPress={() => router.push('/create-trip/search-place')}  >
+              <Ionicons name="add-circle" size={40} color="#367AFF" />
+            </TouchableOpacity>
           </View>
         </View>
 

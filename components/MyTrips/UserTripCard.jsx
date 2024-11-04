@@ -59,7 +59,7 @@ const UserTripCard = ({trip, onDelete}) => {
                 />
                 
                 <View className='ml-3'>
-                    <Text className='font-medium text-[18px] mb-1 w-[300px]'>
+                    <Text className='font-medium text-[18px] mb-1 w-[230px]'>
                         {trip.tripPlan?.location}
                     </Text>
                     

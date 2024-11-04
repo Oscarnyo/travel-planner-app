@@ -83,7 +83,7 @@ const PlaceCard = ({ place, tripId, dayIndex, placeIndex, tripDetails }) => {
                 </View>
             )}
             
-            <View className='mt-2'>
+            <View className='mt-2 '>
                 <View className='flex-row items-center'>
                     <Text className='font-bold text-[20px] mb-1'>
                         {place.place_name}

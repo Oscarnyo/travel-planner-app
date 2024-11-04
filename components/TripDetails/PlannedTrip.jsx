@@ -22,11 +22,21 @@ const PlannedTrip = ({details, tripDetails}) => {
             
             {details.map((day, dayIndex) => (
                 <View key={`day-${dayIndex}`}>
-                    <Text className='font-bold text-[22px] mt-5 ml-[2px]'>
+                    <View className='flex-row items-center justify-between mt-2 p-2 rounded-xl mb-1'>
+                        <Text className='font-bold text-[22px] ml-[2px] self-center'>
                         {day.day}
-                    </Text>
+                        </Text>
+                        
+                        <TouchableOpacity
+                            onPress={() => ('')} 
+                            className='self-center mt-[3px]'
+                        >
+                            <Ionicons name="add-circle" size={34} color="#367AFF" />
+                        </TouchableOpacity>
+                    </View>
+                    
                     {day.activities && day.activities.map((place, placeIndex) => (
-                        <View key={`place-${dayIndex}-${placeIndex}`} className='p-[17] rounded-2xl mt-5 bg-[#d2d7f0]'>
+                        <View key={`place-${dayIndex}-${placeIndex}`} className='p-[17] rounded-2xl mb-5 bg-[#d2d7f0]'>
                             <PlaceCard
                                 place={place}
                                 tripId={tripDetails?.docId}
