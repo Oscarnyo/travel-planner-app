@@ -10,6 +10,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import PlannedTrip from '../../components/TripDetails/PlannedTrip';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 
 const TripsDetails = () => {
