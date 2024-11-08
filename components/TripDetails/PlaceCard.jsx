@@ -96,21 +96,16 @@ const PlaceCard = ({ place, tripId, dayIndex, placeIndex, tripDetails }) => {
                     </TouchableOpacity>
                 </View>
                 
-                <Text className='font-normal text-[14px] text-gray-500 mb-1'>
+                <Text className='font-normal text-[14px] text-gray-500 mb-2'>
                     {place.place_details}
                 </Text>
                 
-                <View className='flex-row justify-between items-end'>
-                    <View>
+                <View className='flex-row justify-between items-center'>
                         <Text className='font-normal text-[15px] mb-1 mt-1'>
                             🎟️ Ticket Price: 
                             <Text className='font-bold'> {place.ticket_pricing}</Text>
                         </Text>
-                        <Text className='font-normal text-[15px] mb-1'>
-                            ⌛ Duration: 
-                            <Text className='font-bold'> {place.time_to_travel}</Text>
-                        </Text>
-                    </View>
+                    
                     <TouchableOpacity 
                         className='bg-secondary p-[6] rounded-lg'
                         onPress={() => openInGoogleMaps(place.place_name)}
