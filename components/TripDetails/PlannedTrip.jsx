@@ -52,10 +52,10 @@ const PlannedTrip = ({details, tripDetails}) => {
                 activeOpacity={1}
             >
                 <View 
-                    className="absolute rounded-xl p-2"
+                    className="absolute rounded-2xl p-2"
                     style={{
                         top: position.y,
-                        left: position.x,
+                        left: position.x,             
                         width: 150,
                         backgroundColor: 'rgba(210, 215, 240, 0.9)', // Semi-transparent background
                         shadowColor: "#000",
@@ -73,14 +73,18 @@ const PlannedTrip = ({details, tripDetails}) => {
                         style={{backgroundColor:'rgba(210, 215, 240, 0.78)'}}
                         onPress={() => {
                             setShowOptions(false);
-                            router.push('/(screens)/SearchLocation');
+                            router.push({
+                                pathname: '/(screens)/SearchLocation',
+                                params: { 
+                                    tripId: tripDetails?.docId,
+                                    dayIndex: selectedDayIndex
+                                }
+                            });
                         }}
                     >
                         <Ionicons name="location" size={20} color="#367AFF" />
                         <Text className="ml-2 font-bold text-[16px] text-gray-700">Add Place</Text>
                     </TouchableOpacity>
-                    
-                    
                     
                     <TouchableOpacity 
                         className="flex-row items-center p-3 rounded-lg"
@@ -184,10 +188,7 @@ const PlannedTrip = ({details, tripDetails}) => {
                 onClose={() => setShowOptions(false)}
                 position={menuPosition}
             />
-            <SearchLocation 
-                visible={showSearchLocation}
-                onClose={() => setShowSearchLocation(false)}
-            />
+            
         </View>
     );
 };

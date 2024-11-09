@@ -1,43 +1,94 @@
-import { View } from 'react-native'
+import { View, Text, TouchableWithoutFeedback, Keyboard, Alert } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { GOOGLE_MAPS_API_KEY } from '@env'
-import { Keyboard, TouchableWithoutFeedback } from 'react-native'
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { db } from '../../firebaseConfig'
 
 const SearchLocation = () => {
+    const { tripId, dayIndex } = useLocalSearchParams();
+
+    const handlePlaceSelection = async (data, details) => {
+        try {
+            if (!tripId || dayIndex === undefined) {
+                console.error('Missing tripId or dayIndex');
+                return;
+            }
+
+            // Get current trip data from "users" collection
+            const tripRef = doc(db, "users", tripId);
+            const tripDoc = await getDoc(tripRef);
+            
+            if (!tripDoc.exists()) {
+                throw new Error('Trip document not found');
+            }
+
+            const tripData = tripDoc.data();
+            
+            // Create new place object
+            const newPlace = {
+                place_name: details.name || "Unknown Place",
+                place_details: details.editorial_summary?.overview || details.formatted_address || "No description available",
+                opening_hours: details.opening_hours?.weekday_text || [],
+                ticket_pricing: "Price not available",
+                is_open: details.opening_hours?.open_now || false,
+                photoRef: details.photos?.[0]?.photo_reference || null
+            };
+
+            // Get the current daily plan or initialize it
+            let updatedTripPlan = tripData.tripPlan || {};
+            let updatedDailyPlan = updatedTripPlan.daily_plan || [];
+
+            // Ensure the day exists
+            if (!updatedDailyPlan[dayIndex]) {
+                updatedDailyPlan[dayIndex] = {
+                    day: `Day ${parseInt(dayIndex) + 1}`,
+                    activities: []
+                };
+            }
+
+            // Ensure activities array exists
+            if (!updatedDailyPlan[dayIndex].activities) {
+                updatedDailyPlan[dayIndex].activities = [];
+            }
+
+            // Add the new place
+            updatedDailyPlan[dayIndex].activities.push(newPlace);
+
+            // Update the entire tripPlan object
+            await updateDoc(tripRef, {
+                tripPlan: {
+                    ...updatedTripPlan,
+                    daily_plan: updatedDailyPlan
+                }
+            });
+
+            
+            router.back();
+        } catch (error) {
+            console.error('Error adding place:', error);
+            Alert.alert('Error', 'Failed to add place. Please try again.');
+        }
+    };
+
     return (
         <SafeAreaView className="bg-backBlue flex-1">
-            <TouchableWithoutFeedback onPress={() => {
-                Keyboard.dismiss();
-            }}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View className='p-6 pt-16'>
                     <GooglePlacesAutocomplete
                         placeholder='Search Place'
                         onPress={(data, details = null) => {
-                            console.log('Search result:', data, details);
-                            if (details) {
-                                console.log('Selected place data:', {
-                                    name: details.name,
-                                    address: details.formatted_address,
-                                    location: details.geometry.location,
-                                    photos: details.photos
-                                });
-
-                                // Navigate back to trip details
-                                router.back();
-                                
-                            }
+                            handlePlaceSelection(data, details);
                         }}
                         query={{
                             key: GOOGLE_MAPS_API_KEY,
                             language: 'en',
+                            fields: 'name,editorial_summary,opening_hours,formatted_address,photos'
                         }}
                         fetchDetails={true}
                         enablePoweredByContainer={false}
-                        onFail={error => console.error('GooglePlacesAutocomplete error:', error)}
-                        onNotFound={() => console.log('No results found')}
                         styles={{
                             container: {
                                 flex: 1,
@@ -74,4 +125,4 @@ const SearchLocation = () => {
     );
 };
 
-export default SearchLocation
+export default SearchLocation;
