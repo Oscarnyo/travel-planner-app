@@ -5,12 +5,14 @@ import { GOOGLE_MAPS_API_KEY } from '@env';
 import PlaceCard from './PlaceCard';
 import SearchLocation from '../../app/(screens)/SearchLocation'
 import { router } from 'expo-router';
+import CustomPlaceCard from '../CustomPlaceCard';
 
 const PlannedTrip = ({details, tripDetails}) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedDayIndex, setSelectedDayIndex] = useState(null);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
     const [showSearchLocation, setShowSearchLocation] = useState(false);
+    const [insertPosition, setInsertPosition] = useState('start');
     
     // // Add debug log
     // console.log("PlannedTrip received details:", details);
@@ -21,15 +23,14 @@ const PlannedTrip = ({details, tripDetails}) => {
     }
     
     // Add button press handler
-    const handleAddPress = (event, dayIndex) => {
+    const handleAddPress = (event, dayIndex, position = 'start') => {
         event.target.measure((x, y, width, height, pageX, pageY) => {
-            // Pre-calculate the position immediately
             setMenuPosition({ 
                 x: pageX + 30,
                 y: pageY - 148
             });
             setSelectedDayIndex(dayIndex);
-            // Use requestAnimationFrame for smoother state updates
+            setInsertPosition(position); // Add this state variable
             requestAnimationFrame(() => {
                 setShowOptions(true);
             });
@@ -77,7 +78,8 @@ const PlannedTrip = ({details, tripDetails}) => {
                                 pathname: '/(screens)/SearchLocation',
                                 params: { 
                                     tripId: tripDetails?.docId,
-                                    dayIndex: selectedDayIndex
+                                    dayIndex: selectedDayIndex,
+                                    insertPosition: insertPosition
                                 }
                             });
                         }}
@@ -124,7 +126,7 @@ const PlannedTrip = ({details, tripDetails}) => {
                         {/* Only show start timeline button if there are activities */}
                         {day.activities && day.activities.length > 0 && (
                             <TouchableOpacity
-                                onPress={(event) => handleAddPress(event, dayIndex)}
+                                onPress={(event) => handleAddPress(event, dayIndex, 'start')}
                                 className="absolute -left-[15px] top-[-5px] z-10"
                                 activeOpacity={0.9}
                             >
@@ -144,6 +146,15 @@ const PlannedTrip = ({details, tripDetails}) => {
                                 {/* Place card */}
                                 <View className='ml-7 mb-1 mt-8 w-[350px]'>
                                     <View className='p-5 rounded-2xl bg-[#d2d7f0]'>
+                                    {place.isManuallyAdded ? (
+                                        <CustomPlaceCard
+                                            place={place}
+                                            tripId={tripDetails?.docId}
+                                            dayIndex={dayIndex}
+                                            placeIndex={placeIndex}
+                                            tripDetails={details}
+                                        />
+                                    ) : (
                                         <PlaceCard
                                             place={place}
                                             tripId={tripDetails?.docId}
@@ -151,12 +162,13 @@ const PlannedTrip = ({details, tripDetails}) => {
                                             placeIndex={placeIndex}
                                             tripDetails={details}
                                         />
+                                    )}
                                     </View>
                                 </View>
     
                                 {/* Add button after each place card */}
                                 <TouchableOpacity
-                                    onPress={(event) => handleAddPress(event, dayIndex)}
+                                    onPress={(event) => handleAddPress(event, dayIndex, placeIndex + 1)}
                                     className="absolute -left-[15px] bottom-[-38px] z-10"
                                     activeOpacity={0.9}
                                 >
