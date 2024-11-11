@@ -138,11 +138,11 @@ const PlannedTrip = ({details, tripDetails}) => {
                         {day.activities && day.activities.length > 0 && (
                             <TouchableOpacity
                                 onPress={(event) => handleAddPress(event, dayIndex, 'start')}
-                                className="absolute -left-[15px] top-[-5px] z-10"
+                                className="absolute -left-[12px] top-[-5px] z-10"
                                 activeOpacity={0.9}
                             >
                                 <View className="bg-white rounded-full p-1">
-                                    <Ionicons name="add-circle" size={30} color="#367AFF" />
+                                    <Ionicons name="add-circle" size={25} color="#367AFF" />
                                 </View>
                             </TouchableOpacity>
                         )}
@@ -203,11 +203,11 @@ const PlannedTrip = ({details, tripDetails}) => {
                                 {/* Add button after each place card */}
                                 <TouchableOpacity
                                     onPress={(event) => handleAddPress(event, dayIndex, placeIndex + 1)}
-                                    className="absolute -left-[15px] bottom-[-38px] z-10"
+                                    className="absolute -left-[12px] bottom-[-38px] z-10"
                                     activeOpacity={0.9}
                                 >
                                     <View className="bg-white rounded-full p-1">
-                                        <Ionicons name="add-circle" size={30} color="#367AFF" />
+                                        <Ionicons name="add-circle" size={25} color="#367AFF" />
                                     </View>
                                 </TouchableOpacity>
                             </View>

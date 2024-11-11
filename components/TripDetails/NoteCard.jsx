@@ -3,8 +3,25 @@ import React from 'react'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db } from '../../firebaseConfig'
+import { router } from 'expo-router'
 
 const NoteCard = ({ note, tripId, dayIndex, noteIndex, tripDetails }) => {
+  
+  const handleEdit = () => {
+    router.push({
+      pathname: '/(screens)/notes',
+      params: { 
+        tripId,
+        dayIndex,
+        noteIndex,
+        isEditing: true,
+        title: note.title,
+        content: note.content
+      }
+    });
+  };
+  
+  
   const handleDelete = async () => {
     Alert.alert(
       "Delete Note",
@@ -41,9 +58,23 @@ const NoteCard = ({ note, tripId, dayIndex, noteIndex, tripDetails }) => {
 
   return (
     <View>
-      <View className="flex-row justify-between items-start mb-2">
+      <View className="flex-row justify-between items-start">
         <Text className="font-bold text-[18px] text-gray-800 flex-1">
           {note.title}
+        </Text>
+        
+        <TouchableOpacity 
+            onPress={handleEdit}
+            className="p-1 mb-2"
+        >
+            <Ionicons name="pencil" size={20} color="#367AFF" />
+        </TouchableOpacity>
+        
+      </View>
+      
+      <View className="flex-row justify-between items-center">
+        <Text className="text-gray-600 text-[14px] leading-5">
+          {note.content}
         </Text>
         <TouchableOpacity 
           onPress={handleDelete}
@@ -52,10 +83,6 @@ const NoteCard = ({ note, tripId, dayIndex, noteIndex, tripDetails }) => {
           <Ionicons name="trash-outline" size={20} color="#FF3B30" />
         </TouchableOpacity>
       </View>
-      
-      <Text className="text-gray-600 text-[14px] leading-5">
-        {note.content}
-      </Text>
     </View>
   )
 }
