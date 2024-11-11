@@ -47,8 +47,21 @@ const UserTripCard = ({trip, onDelete}) => {
                 }
             })}
             activeOpacity={0.7}
+            style={{
+                shadowColor: '#000',
+                shadowOffset: {
+                    width: 0,
+                    height: 2,
+                },
+                shadowOpacity: 0.55,
+                shadowRadius: 3.84,
+                elevation: 4, // for Android
+                backgroundColor: '#d2d7f0', 
+                borderRadius: 20, // Match the inner View rounded-2xl
+                marginVertical: 10, // Add some vertical spacing
+            }}
         >
-            <View className='mt-3 mb-2 flex-row py-4 px-4 items-center bg-[#d2d7f0] rounded-2xl relative'>
+            <View className='flex-row py-4 px-4 items-center relative'>
                 <Image 
                     source={{
                         uri: 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=' + 

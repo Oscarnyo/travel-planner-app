@@ -44,16 +44,31 @@ const UserTripList = ({userTrips}) => {
     <View>
       <View className='mt-3'>
         
-        {LatestTrip?.locationInfo?.photoRef?
+        {LatestTrip?.locationInfo?.photoRef? (
+        <View 
+          style={{
+            shadowColor: '#000',
+            shadowOffset: {
+                width: 0,
+                height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+            borderRadius: 16, // Match the image border radius
+        
+          }}
+        >
           <Image source={{uri:'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference='+LatestTrip.locationInfo.photoRef+'&key='+GOOGLE_MAPS_API_KEY}}
           
           className='w-full h-[240] object-cover rounded-2xl'
           />
-        :
+          </View>
+        ):(
         <Image source={require('./../../assets/images/samplePlace.jpg')}
             className='w-full h-[240] object-cover rounded-3xl'
         />
-        }
+        )}
         <View className=' mt-2 '>
           <View className='flex-row justify-between '>
             <Text
@@ -92,7 +107,7 @@ const UserTripList = ({userTrips}) => {
               handlePress={() => router.push({pathname:'/trip-details',params:{
                 trip:JSON.stringify(userTrips[0])
               }})}
-              containerStyles=" mt-3 w-full h-[50px] self-center mb-3"
+              containerStyles=" mt-3 w-full h-[52px] self-center mb-3"
               textStyles="text-[20px]"
             />
         </View>

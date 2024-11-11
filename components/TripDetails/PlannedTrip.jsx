@@ -6,6 +6,7 @@ import PlaceCard from './PlaceCard';
 import SearchLocation from '../../app/(screens)/SearchLocation'
 import { router } from 'expo-router';
 import CustomPlaceCard from '../CustomPlaceCard';
+import NoteCard from './NoteCard'
 
 const PlannedTrip = ({details, tripDetails}) => {
     const [showOptions, setShowOptions] = useState(false);
@@ -91,7 +92,17 @@ const PlannedTrip = ({details, tripDetails}) => {
                     <TouchableOpacity 
                         className="flex-row items-center p-3 rounded-lg"
                         style={{backgroundColor:'rgba(210, 215, 240, 0.78)'}}
-                        onPress={() => {}}
+                        onPress={() => {
+                            setShowOptions(false);
+                            router.push({
+                                pathname: '/(screens)/notes',
+                                params: { 
+                                    tripId: tripDetails?.docId,
+                                    dayIndex: selectedDayIndex,
+                                    insertPosition: insertPosition
+                                }
+                            });
+                        }}
                     >
                         <Ionicons name="document-text" size={20} color="#367AFF" />
                         <Text className="ml-2 text-[16px] font-bold text-gray-700">Add Note</Text>
@@ -139,14 +150,37 @@ const PlannedTrip = ({details, tripDetails}) => {
                         {day.activities && day.activities.map((place, placeIndex) => (
                             <View key={`place-${dayIndex}-${placeIndex}`} className="relative mb-3">
                                 {/* Timeline dot */}
-                                <View className="absolute -left-[1px] top-[180px] z-10">
+                                <View className="absolute -left-[1px] z-10" style={{
+                                    top: place.type === 'note' ? 80 : 180, // Adjust based on card type
+                                }}>
                                     <View className="w-[12px] h-[12px] rounded-full bg-[#367AFF]" />
                                 </View>
                                 
                                 {/* Place card */}
                                 <View className='ml-7 mb-1 mt-8 w-[350px]'>
-                                    <View className='p-5 rounded-2xl bg-[#d2d7f0]'>
-                                    {place.isManuallyAdded ? (
+                                    <View className='p-5 bg-[#d2d7f0]'
+                                        style={{
+                                        shadowColor: '#000',
+                                        shadowOffset: {
+                                            width: 0,
+                                            height: 2,
+                                        },
+                                        shadowOpacity: 0.25,
+                                        shadowRadius: 3.84,
+                                        elevation: 5,
+                                        borderRadius: 20,
+                                    }}
+                                    >
+                                    {place.type === 'note' ?(
+                                        <NoteCard
+                                        note={place}
+                                        tripId={tripDetails?.docId}
+                                        dayIndex={dayIndex}
+                                        noteIndex={placeIndex}
+                                        tripDetails={details}
+                                    />
+                                        
+                                    ):place.isManuallyAdded ? (
                                         <CustomPlaceCard
                                             place={place}
                                             tripId={tripDetails?.docId}
