@@ -4,13 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import { useState } from 'react'
 
-import {images} from '../constants'
-import FormField from '../components/FormField'
-import CustomButton from '../components/CustomButton'
+import {images} from '../../constants'
+import FormField from '../../components/FormField'
+import CustomButton from '../../components/CustomButton'
 import { Link } from 'expo-router'
 
 import { router } from 'expo-router'
-import { signUp } from '../firebaseConfig'
+import { signUp } from '../../firebaseConfig'
 
 const SignUp = () => {
   const [username, setUserame] = useState('');

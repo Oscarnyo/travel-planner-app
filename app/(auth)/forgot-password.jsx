@@ -2,11 +2,11 @@ import { View, Text, ScrollView, Image, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
-import { images } from '../constants'
-import FormField from '../components/FormField'
-import CustomButton from '../components/CustomButton'
+import { images } from '../../constants'
+import FormField from '../../components/FormField'
+import CustomButton from '../../components/CustomButton'
 import { Link, router } from 'expo-router'
-import { sendPasswordResetEmail } from '../firebaseConfig'
+import { sendPasswordResetEmail } from '../../firebaseConfig'
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('')

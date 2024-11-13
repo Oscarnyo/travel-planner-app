@@ -71,7 +71,7 @@ const TripsDetails = () => {
     
     return tripDetails&&(
         <SafeAreaView className="bg-backBlue flex-1">
-            <ScrollView contentContainerStyle={{ paddingBottom: 50 }} > 
+            <ScrollView contentContainerStyle={{ paddingBottom: 50 }} showsVerticalScrollIndicator = {false} > 
                 <View>
                     <Image 
                     source={{
@@ -123,7 +123,6 @@ const TripsDetails = () => {
 
                 </View>
             </ScrollView>
-            
         </SafeAreaView>
     )
 }

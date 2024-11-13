@@ -14,9 +14,9 @@ const RootLayout = () => {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-      <Stack.Screen name="sign-up" options={{ headerShown: false }} />
-      <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)/sign-in" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)/sign-up" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)/forgot-password" options={{ headerShown: false }} />
       <Stack.Screen name="(screens)/favourite" options={{ headerShown: false }} />
       <Stack.Screen name="create-trip/search-place" options={{ headerShown: true, headerTransparent:true, headerTitle:'Search'}} />
       <Stack.Screen name="create-trip/select-Traveler" options={{ headerShown: true, headerTransparent:true, headerTitle:''}} />
@@ -27,6 +27,7 @@ const RootLayout = () => {
       <Stack.Screen name="trip-details/index" options={{ headerShown: false, headerTransparent:true, headerTitle:''}} />
       <Stack.Screen name="(screens)/SearchLocation" options={{ headerShown: true, headerTransparent:true, headerTitle:'Search'}} />
       <Stack.Screen name="(screens)/notes" options={{ headerShown: true, headerTransparent:true, headerTitle:'Note'}} />
+      <Stack.Screen name="(screens)/PlaceDetails" options={{ headerShown: true, headerTransparent:true, headerTitle:'Place Details'}} />
     </Stack>
     </createTripContext.Provider>
   </AuthProvider>

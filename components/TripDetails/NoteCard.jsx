@@ -59,7 +59,7 @@ const NoteCard = ({ note, tripId, dayIndex, noteIndex, tripDetails }) => {
   return (
     <View>
       <View className="flex-row justify-between items-start">
-        <Text className="font-bold text-[18px] text-gray-800 flex-1">
+        <Text className="font-bold text-[18px] text-gray-800 flex-1 w-[260px]">
           {note.title}
         </Text>
         
@@ -73,7 +73,7 @@ const NoteCard = ({ note, tripId, dayIndex, noteIndex, tripDetails }) => {
       </View>
       
       <View className="flex-row justify-between items-center">
-        <Text className="text-gray-600 text-[14px] leading-5">
+        <Text className="text-gray-600 text-[14px] leading-5 w-[260px]">
           {note.content}
         </Text>
         <TouchableOpacity 

@@ -61,6 +61,7 @@ const planner = () => {
         {/* Scrollable Content */}
         <ScrollView 
           contentContainerStyle={{ paddingBottom: 30 }}
+          showsVerticalScrollIndicator = {false}
           className="px-5"
         > 
           {loading && <ActivityIndicator size="large" color="#0000ff" />}
