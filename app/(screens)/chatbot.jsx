@@ -9,7 +9,8 @@ import {
   FlatList, 
   ActivityIndicator,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Keyboard
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -51,17 +52,48 @@ const ChatBot = () => {
   const sendMessage = async () => {
     if (!inputText.trim()) return;
     
+    Keyboard.dismiss();
     setIsLoading(true);
     const userMessage = { text: inputText.trim(), user: true };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputText('');
-
+  
     try {
       const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(GOOGLE_GERMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = `As a knowledgeable travel assistant, provide concise and helpful advice for: ${inputText}`;
+      const prompt = `As a knowledgeable travel assistant, provide advice for: ${inputText}.
+Format your response with proper spacing and structure:
+
+1. Start with a clear title in CAPS, followed by two newlines
+2. Each section should have:
+   - A bold section header (use **Header:**)
+   - A newline after each header
+   - Bullet points with • symbol
+   - Bold key terms (use **term**)
+   - Two newlines between sections
+
+Example format:
+**PARIS TRAVEL GUIDE**
+
+**Best Time to Visit:**
+• **Peak Season**: April to October
+• **Off Season**: November to March
+
+**Local Transportation:**
+• **Metro**: Efficient and covers major attractions
+• **Bus**: Comprehensive network, slower but scenic
+
+Keep responses concise and well-formatted.`;
+      
       const result = await model.generateContent(prompt);
-      const text = result.response.text();
+      let text = result.response.text();
+      
+      // Basic cleanup while preserving formatting
+      text = text
+        .replace(/\*\*/g, '')
+        .replace(/\*/g, '')
+        .replace(/`/g, '')
+        .replace(/\[(.*?)\]\((.*?)\)/g, '$1');
       
       setMessages(prevMessages => [...prevMessages, { text, user: false }]);
     } catch (error) {
@@ -77,12 +109,13 @@ const ChatBot = () => {
     }
   };
 
+  
   const renderMessage = ({ item }) => (
     <View 
-      className={`p-3 rounded-xl max-w-[80%] mb-4 ${
+      className={`px-4 py-3 rounded-2xl mb-3 ${
         item.user 
-          ? 'bg-secondary self-end' 
-          : 'bg-white self-start'
+          ? 'bg-secondary self-end ml-12' 
+          : 'bg-white self-start mr-12 shadow-sm'
       }`}
     >
       <Text 
@@ -90,7 +123,7 @@ const ChatBot = () => {
           item.user 
             ? 'text-white' 
             : 'text-gray-800'
-        }`}
+        } text-[15px] leading-6`}
       >
         {item.text}
       </Text>
@@ -112,6 +145,7 @@ const ChatBot = () => {
           className="flex-1"
           onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
           onLayout={() => flatListRef.current?.scrollToEnd()}
+          showsHorizontalScrollIndicator={false}
         />
 
         <KeyboardAvoidingView
