@@ -1,145 +1,176 @@
-import { View, Text, Image, SafeAreaView, ActivityIndicator, ScrollView, Linking, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { View, Text, Image, ScrollView, TouchableOpacity, Linking, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
-import { getLocationDetails } from '../../services/TravelAdvisorApi'
 import { Ionicons } from '@expo/vector-icons'
+import { GOOGLE_MAPS_API_KEY } from '@env'
 
 const PlaceDetails = () => {
   const params = useLocalSearchParams()
-  const [details, setDetails] = useState(null)
+  const [placeDetails, setPlaceDetails] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetchDetails()
+    fetchPlaceDetails()
   }, [])
 
-  const fetchDetails = async () => {
+  const fetchPlaceDetails = async () => {
     try {
-      const response = await getLocationDetails(params.locationId)
-      console.log('Hotel Details Response:', response) // Debug log
-      if (response?.data) {
-        setDetails(response.data[0]) // Access the first item in the data array
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${params.locationId}&fields=name,rating,formatted_phone_number,formatted_address,website,price_level,opening_hours,reviews&key=${GOOGLE_MAPS_API_KEY}`
+      )
+      const data = await response.json()
+      
+      if (data.result) {
+        setPlaceDetails(data.result)
+      } else {
+        setError('Failed to fetch place details')
       }
     } catch (error) {
-      console.error('Error fetching details:', error)
+      console.error('Error fetching place details:', error)
+      setError('Failed to fetch place details')
     } finally {
       setLoading(false)
     }
   }
 
-  const openInMaps = () => {
-    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(params.name)}`
+  const openWebsite = (url) => {
     Linking.openURL(url)
+  }
+
+  const openMaps = () => {
+    const address = encodeURIComponent(placeDetails.formatted_address)
+    const url = `https://www.google.com/maps/search/?api=1&query=${address}`
+    Linking.openURL(url)
+  }
+
+  const openPhoneNumber = (number) => {
+    Linking.openURL(`tel:${number}`)
   }
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center">
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#367AFF" />
-      </SafeAreaView>
+      </View>
+    )
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 justify-center items-center p-4">
+        <Text className="text-red-500 text-center">{error}</Text>
+      </View>
     )
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-backBlue">
-      <ScrollView>
-        {/* Hotel Image */}
-        <Image
-          source={{ uri: params.photoUrl || details?.photo?.images?.large?.url }}
-          className="w-full h-[250]"
-          
-        />
+    <ScrollView className="flex-1 bg-backBlue px-4 py-4" contentContainerStyle={{ paddingBottom: 30 }}>
+      {/* Header Image */}
+      <View className="mt-9 mb-4">
+        {params.photoUrl ? (
+          <Image
+            source={{ uri: params.photoUrl }}
+            className="w-full h-72 object-cover rounded-3xl" 
+          />
+        ) : (
+          <View className="w-full h-full bg-gray-300 justify-center items-center">
+            <Text className="text-gray-500">No Image Available</Text>
+          </View>
+        )}
+      </View>
 
-        {/* Hotel Details */}
-        <View className="p-4">
-          <Text className="text-2xl font-bold mb-2">{params.name}</Text>
-          
-          {/* Rating and Reviews */}
-          {(details?.rating || details?.num_reviews) && (
-            <View className="flex-row items-center mb-4">
-              <Ionicons name="star" size={20} color="#FFD700" />
-              <Text className="ml-2 text-gray-700">
-                {details?.rating || 'N/A'} ({details?.num_reviews || 0} reviews)
-              </Text>
-            </View>
-          )}
-
-          {/* Address */}
-          {details?.location_string && (
-            <TouchableOpacity onPress={openInMaps} className="flex-row items-start mb-4">
-              <Ionicons name="location" size={20} color="#367AFF" />
-              <Text className="ml-2 text-gray-700 flex-1">
-                {details.location_string}
-              </Text>
-            </TouchableOpacity>
-          )}
-
-          {/* Price */}
-          {details?.price && (
-            <View className="flex-row items-center mb-4">
-              <Ionicons name="cash" size={20} color="#367AFF" />
-              <Text className="ml-2 text-gray-700">
-                {details.price}
-              </Text>
-            </View>
-          )}
-
-          {/* Hotel Class */}
-          {details?.hotel_class && (
-            <View className="flex-row items-center mb-4">
-              <Ionicons name="star" size={20} color="#367AFF" />
-              <Text className="ml-2 text-gray-700">
-                {details.hotel_class} Stars
-              </Text>
-            </View>
-          )}
-
-          {/* Awards */}
-          {details?.awards && details.awards.length > 0 && (
-            <View className="mb-4">
-              <Text className="text-lg font-bold mb-2">Awards</Text>
-              <View className="flex-row flex-wrap">
-                {details.awards.map((award, index) => (
-                  <View key={index} className="bg-gray-100 rounded-full px-3 py-1 mr-2 mb-2">
-                    <Text className="text-gray-700">{award.display_name}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {/* Description */}
-          {details?.description && (
-            <View className="mb-4">
-              <Text className="text-lg font-bold mb-2">About</Text>
-              <Text className="text-gray-700">{details.description}</Text>
-            </View>
-          )}
-
-          {/* Contact */}
-          {details?.phone && (
-            <TouchableOpacity 
-              onPress={() => Linking.openURL(`tel:${details.phone}`)}
-              className="flex-row items-center mb-4"
-            >
-              <Ionicons name="call" size={20} color="#367AFF" />
-              <Text className="ml-2 text-gray-700">{details.phone}</Text>
-            </TouchableOpacity>
-          )}
-
-          {/* Website */}
-          {details?.web_url && (
-            <TouchableOpacity 
-              onPress={() => Linking.openURL(details.web_url)}
-              className="flex-row items-center mb-4"
-            >
-              <Ionicons name="globe" size={20} color="#367AFF" />
-              <Text className="ml-2 text-blue-500">Visit Website</Text>
-            </TouchableOpacity>
-          )}
+      {/* Content */}
+      <View className=" rouded-t-2xl">
+        {/* Name and Rating */}
+        <Text className="text-2xl font-bold mb-2">{placeDetails.name}</Text>
+        <View className="flex-row items-center mb-4">
+          <Ionicons name="star" size={20} color="#FFD700" />
+          <Text className="ml-1 text-gray-600">
+            {placeDetails.rating} ({placeDetails.reviews?.length || 0} reviews)
+          </Text>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+
+        {/* Address */}
+        <TouchableOpacity 
+          onPress={openMaps}
+          className="flex-row items-center mb-4"
+        >
+          <Ionicons name="location" size={20} color="#367AFF" />
+          <Text className="ml-2 text-gray-600 flex-1">
+            {placeDetails.formatted_address}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Phone */}
+        {placeDetails.formatted_phone_number && (
+          <TouchableOpacity 
+            onPress={() => openPhoneNumber(placeDetails.formatted_phone_number)}
+            className="flex-row items-center mb-4"
+          >
+            <Ionicons name="call" size={20} color="#367AFF" />
+            <Text className="ml-2 text-gray-600">
+              {placeDetails.formatted_phone_number}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Website */}
+        {placeDetails.website && (
+          <TouchableOpacity 
+            onPress={() => openWebsite(placeDetails.website)}
+            className="flex-row items-center mb-4"
+          >
+            <Ionicons name="globe" size={20} color="#367AFF" />
+            <Text className="ml-2 text-blue-500 flex-1" numberOfLines={1}>
+              Visit Website
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Opening Hours */}
+        {placeDetails.opening_hours && (
+          <View className="mb-4">
+            <Text className="text-lg font-bold mb-2">Opening Hours</Text>
+            {placeDetails.opening_hours.weekday_text?.map((hours, index) => (
+              <Text key={index} className="text-gray-600">{hours}</Text>
+            ))}
+          </View>
+        )}
+
+        {/* Reviews */}
+        {placeDetails.reviews && placeDetails.reviews.length > 0 && (
+          <View>
+            <View className="flex-row items-center justify-between mb-2">
+              <Text className="text-lg font-bold">Reviews</Text>
+              <TouchableOpacity 
+                onPress={() => {
+                  const url = `https://www.google.com/maps/search/?api=1&query=$           {encodeURIComponent(placeDetails.name)}&query_place_id=${params.           locationId}`;
+                  Linking.openURL(url);
+                }}
+                className="flex-row items-center"
+              >
+                <Text className="text-blue-500 mr-1">View All</Text>
+                <Ionicons name="arrow-forward" size={16} color="#367AFF" />
+              </TouchableOpacity>
+            </View>
+            
+            {placeDetails.reviews.map((review, index) => (
+              <View key={index} className="mb-4 p-3 bg-gray-50 rounded-3xl">
+                <View className="flex-row items-center mb-2">
+                  <Text className="font-bold text-lg">{review.author_name}</Text>
+                  <View className="flex-row items-center ml-2">
+                    <Ionicons name="star" size={18} color="#FFD700" />
+                    <Text className="ml-1 text-base">{review.rating}</Text>
+                  </View>
+                </View>
+                <Text className="text-gray-600">{review.text}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+    </ScrollView>
   )
 }
 

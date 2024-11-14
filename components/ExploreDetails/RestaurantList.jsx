@@ -1,21 +1,20 @@
 import { View, Text, FlatList, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import * as Location from 'expo-location'
-import HotelItem from './HotelItem'
+import RestaurantItem from './RestaurantItem'
 import { Ionicons } from '@expo/vector-icons'
 import { GOOGLE_MAPS_API_KEY } from '@env'
 
-
-const HotelItemList = () => {
-  const [hotels, setHotels] = useState([])
+const RestaurantList = () => {
+  const [restaurants, setRestaurants] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    fetchNearbyHotels()
+    fetchNearbyRestaurants()
   }, [])
 
-  const fetchNearbyHotels = async () => {
+  const fetchNearbyRestaurants = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync()
       if (status !== 'granted') {
@@ -28,28 +27,28 @@ const HotelItemList = () => {
       const { latitude, longitude } = location.coords
 
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=lodging&key=${GOOGLE_MAPS_API_KEY}`
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=5000&type=restaurant&key=${GOOGLE_MAPS_API_KEY}`
       )
       const data = await response.json()
       
       if (data.results) {
-        const validHotels = data.results.filter(hotel => 
-          hotel.name && 
-          hotel.place_id &&
-          hotel.business_status === "OPERATIONAL"
-        )
+        const validRestaurants = data.results.filter(restaurant => 
+          restaurant.name && 
+          restaurant.place_id &&
+          restaurant.business_status === "OPERATIONAL"
+        ).slice(0, 20) // Limit to 5 restaurants
         
-        if (validHotels.length === 0) {
-          setError('No hotels found in this area')
+        if (validRestaurants.length === 0) {
+          setError('No restaurants found in this area')
         } else {
-          setHotels(validHotels)
+          setRestaurants(validRestaurants)
         }
       } else {
-        setError('Failed to fetch hotels')
+        setError('Failed to fetch restaurants')
       }
     } catch (error) {
-      console.error('Error in fetchNearbyHotels:', error)
-      setError('Failed to fetch hotels')
+      console.error('Error in fetchNearbyRestaurants:', error)
+      setError('Failed to fetch restaurants')
     } finally {
       setLoading(false)
     }
@@ -59,8 +58,8 @@ const HotelItemList = () => {
     return (
       <View className="mt-4">
         <View className="flex-row items-center mb-4">
-          <Ionicons name="bed" size={22} color="#367AFF" />
-          <Text className="font-bold text-[20px] ml-2">Nearby Hotels</Text>
+          <Ionicons name="restaurant" size={22} color="#367AFF" />
+          <Text className="font-bold text-[20px] ml-2">Nearby Restaurants</Text>
         </View>
         <ActivityIndicator size="large" color="#367AFF" />
       </View>
@@ -71,8 +70,8 @@ const HotelItemList = () => {
     return (
       <View className="mt-4">
         <View className="flex-row items-center mb-4">
-          <Ionicons name="bed" size={22} color="#367AFF" />
-          <Text className="font-bold text-[20px] ml-2">Nearby Hotels</Text>
+          <Ionicons name="restaurant" size={22} color="#367AFF" />
+          <Text className="font-bold text-[20px] ml-2">Nearby Restaurants</Text>
         </View>
         <Text className="text-red-500 text-center">{error}</Text>
       </View>
@@ -80,21 +79,22 @@ const HotelItemList = () => {
   }
 
   return (
-    <View className="mt-2">
+    <View className="mt-4">
       <View className="flex-row items-center mb-4">
-        <Ionicons name="bed" size={22} color="#367AFF" />
-        <Text className="font-bold text-[20px] ml-2">Nearby Hotels</Text>
+        <Ionicons name="restaurant" size={22} color="#367AFF" />
+        <Text className="font-bold text-[20px] ml-2">Nearby Restaurants</Text>
       </View>
       
       <FlatList 
-        data={hotels}
+        data={restaurants}
         renderItem={({ item }) => (
-          <HotelItem 
-            hotel={{
+          <RestaurantItem 
+            restaurant={{
               name: item.name,
               location_id: item.place_id,
               rating: item.rating,
               num_reviews: item.user_ratings_total,
+              price_level: item.price_level,
               photo: {
                 images: {
                   medium: {
@@ -108,13 +108,10 @@ const HotelItemList = () => {
           />
         )}
         keyExtractor={(item) => item.place_id}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        snapToAlignment="start"
-        decelerationRate="fast"
+        scrollEnabled={false}
       />
     </View>
   )
 }
 
-export default HotelItemList
+export default RestaurantList

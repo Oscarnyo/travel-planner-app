@@ -27,7 +27,8 @@ const RootLayout = () => {
       <Stack.Screen name="trip-details/index" options={{ headerShown: false, headerTransparent:true, headerTitle:''}} />
       <Stack.Screen name="(screens)/SearchLocation" options={{ headerShown: true, headerTransparent:true, headerTitle:'Search'}} />
       <Stack.Screen name="(screens)/notes" options={{ headerShown: true, headerTransparent:true, headerTitle:'Note'}} />
-      <Stack.Screen name="(screens)/PlaceDetails" options={{ headerShown: true, headerTransparent:true, headerTitle:'Place Details'}} />
+      <Stack.Screen name="(screens)/PlaceDetails" options={{ headerShown: false, headerTransparent:false, headerTitle:''}} />
+      <Stack.Screen name="(screens)/chatbot" options={{ headerShown: false, headerTransparent:true, headerTitle:'Chat Bot'}} />
     </Stack>
     </createTripContext.Provider>
   </AuthProvider>

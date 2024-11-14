@@ -3,8 +3,7 @@ import React, {useEffect} from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { GOOGLE_MAPS_API_KEY } from '@env'
 import { router } from 'expo-router'
-import { searchLocation } from '../../services/TravelAdvisorApi'
-import { TRIPADVISOR_API_KEY } from '@env'
+
 
 const HotelItem = ({ hotel }) => {
   
@@ -41,7 +40,7 @@ const HotelItem = ({ hotel }) => {
         {hotel.photo?.images?.medium?.url ? (
           <Image
             source={{ uri: hotel.photo.images.medium.url }}
-            className="w-full h-[130] rounded-t-2xl"
+            className="w-full h-[140] rounded-t-2xl"
           />
         ) : (
           <View className="w-full h-[130] rounded-t-xl bg-gray-300 justify-center items-center">

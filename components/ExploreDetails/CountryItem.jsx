@@ -1,32 +1,58 @@
-import { TouchableOpacity, Text, View, Image } from 'react-native'
+import { TouchableOpacity, Text, View, Image, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { GOOGLE_MAPS_API_KEY } from '@env'
+import { router } from 'expo-router'
 
-const CountryItem = ({ country, onPress }) => {
+const CountryItem = ({ country }) => {
+  const [placeDetails, setPlaceDetails] = useState(null)
   const [photoRef, setPhotoRef] = useState(null)
 
   useEffect(() => {
-    fetchCountryPhoto()
+    fetchCountryDetails()
   }, [])
 
-  const fetchCountryPhoto = async () => {
+  const fetchCountryDetails = async () => {
     try {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${country.name}&inputtype=textquery&fields=photos&key=${GOOGLE_MAPS_API_KEY}`
+        `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${country.name}&inputtype=textquery&fields=place_id,photos&key=${GOOGLE_MAPS_API_KEY}`
       )
       const data = await response.json()
-      if (data.candidates && data.candidates[0]?.photos) {
-        setPhotoRef(data.candidates[0].photos[0].photo_reference)
+      if (data.candidates && data.candidates[0]) {
+        setPlaceDetails(data.candidates[0])
+        if (data.candidates[0].photos) {
+          setPhotoRef(data.candidates[0].photos[0].photo_reference)
+        }
       }
     } catch (error) {
-      console.error('Error fetching country photo:', error)
+      console.error('Error fetching country details:', error)
+    }
+  }
+
+  const handlePress = async () => {
+    if (placeDetails?.place_id) {
+      try {
+        router.push({
+          pathname: '/(screens)/PlaceDetails',
+          params: { 
+            locationId: placeDetails.place_id,
+            name: country.name,
+            type: 'country',
+            photoUrl: photoRef ? 
+              `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${GOOGLE_MAPS_API_KEY}` 
+              : null
+          }
+        })
+      } catch (error) {
+        console.error('Error navigating to country details:', error)
+        Alert.alert('Error', 'Failed to load country details')
+      }
     }
   }
 
   return (
     <TouchableOpacity 
       className="mr-4 items-center"
-      onPress={() => onPress(country)}
+      onPress={handlePress}
       activeOpacity={0.9}
     >
       <View 
