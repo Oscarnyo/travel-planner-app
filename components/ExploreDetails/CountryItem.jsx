@@ -29,25 +29,21 @@ const CountryItem = ({ country }) => {
   }
 
   const handlePress = async () => {
-    if (placeDetails?.place_id) {
-      try {
-        router.push({
-          pathname: '/(screens)/PlaceDetails',
-          params: { 
-            locationId: placeDetails.place_id,
-            name: country.name,
-            type: 'country',
-            photoUrl: photoRef ? 
-              `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${GOOGLE_MAPS_API_KEY}` 
-              : null
-          }
-        })
-      } catch (error) {
-        console.error('Error navigating to country details:', error)
-        Alert.alert('Error', 'Failed to load country details')
-      }
+    try {
+      router.push({
+        pathname: '/(screens)/CountryDetails',
+        params: { 
+          name: country.name,
+          photoUrl: photoRef ? 
+            `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${GOOGLE_MAPS_API_KEY}` 
+            : null
+        }
+      });
+    } catch (error) {
+      console.error('Error navigating to country details:', error);
+      Alert.alert('Error', 'Failed to load country details');
     }
-  }
+  };
 
   return (
     <TouchableOpacity 

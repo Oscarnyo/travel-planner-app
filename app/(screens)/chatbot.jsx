@@ -62,28 +62,28 @@ const ChatBot = () => {
       const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(GOOGLE_GERMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const prompt = `As a knowledgeable travel assistant, provide advice for: ${inputText}.
-Format your response with proper spacing and structure:
-
-1. Start with a clear title in CAPS, followed by two newlines
-2. Each section should have:
-   - A bold section header (use **Header:**)
-   - A newline after each header
-   - Bullet points with • symbol
-   - Bold key terms (use **term**)
-   - Two newlines between sections
-
-Example format:
-**PARIS TRAVEL GUIDE**
-
-**Best Time to Visit:**
-• **Peak Season**: April to October
-• **Off Season**: November to March
-
-**Local Transportation:**
-• **Metro**: Efficient and covers major attractions
-• **Bus**: Comprehensive network, slower but scenic
-
-Keep responses concise and well-formatted.`;
+      Format your response with proper spacing and structure:
+          
+      1. Start with a clear title in CAPS, followed by two newlines
+      2. Each section should have:
+         - A bold section header (use **Header:**)
+         - A newline after each header 
+         - Bullet points with • symbol
+         - Bold key terms (use **term**)
+         - Two newlines between sections
+          
+      Example format:
+      **PARIS TRAVEL GUIDE**
+          
+      **Best Time to Visit:**
+      • **Peak Season**: April to October
+      • **Off Season**: November to March
+          
+      **Local Transportation:**
+      • **Metro**: Efficient and covers major attractions
+      • **Bus**: Comprehensive network, slower but scenic
+          
+      Keep responses concise and well-formatted.`;
       
       const result = await model.generateContent(prompt);
       let text = result.response.text();
