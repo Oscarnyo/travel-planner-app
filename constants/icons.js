@@ -3,6 +3,7 @@ import explore from "../assets/icons/compass.png";
 import map from "../assets/icons/map.png";
 import expense from "../assets/icons/card.png";
 import profile from "../assets/icons/profile.png";
+import exchange from "../assets/icons/exchange.png";
 
 export default {
     home,
@@ -10,4 +11,5 @@ export default {
     map,
     expense,
     profile,
+    exchange
 }

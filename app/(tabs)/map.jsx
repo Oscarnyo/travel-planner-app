@@ -228,14 +228,6 @@ const Map = () => {
           },
           textInputContainer: {
             borderRadius: 12,
-            shadowColor: "#000",
-            shadowOffset: {
-              width: 0,
-              height: 1,
-            },
-            shadowOpacity: 0.20,
-            shadowRadius: 3.84,
-            elevation: 5,
           },
           textInput: {
             height: 45,

@@ -1,4 +1,13 @@
-import { View, TouchableWithoutFeedback, Keyboard, TouchableOpacity, ScrollView, RefreshControl } from 'react-native'
+import { 
+  View, 
+  Text,
+  TouchableWithoutFeedback, 
+  Keyboard, 
+  TouchableOpacity, 
+  ScrollView, 
+  RefreshControl,
+  Modal 
+} from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
@@ -9,10 +18,12 @@ import CountryList from '../../components/ExploreDetails/CountryList'
 import PlaceList from '../../components/ExploreDetails/PlaceList'
 import HotelItemList from '../../components/ExploreDetails/HotelItemList'
 import RestaurantList from '../../components/ExploreDetails/RestaurantList'
+import ChatBot from '../(screens)/chatbot'
 
 const explore = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [chatModalVisible, setChatModalVisible] = useState(false)
   
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -40,6 +51,27 @@ const explore = () => {
     setIsSearchFocused(false);  
     Keyboard.dismiss();
   };
+  
+  const ChatModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={chatModalVisible}
+      onRequestClose={() => setChatModalVisible(false)}
+    >
+      <View className="flex-1 bg-black/50">
+        <View className="bg-backBlue rounded-t-3xl h-[90%] mt-auto">
+          <View className="flex-row justify-between items-center p-4">
+            <Text className="text-xl font-bold">Travel Assistant</Text>
+            <TouchableOpacity onPress={() => setChatModalVisible(false)}>
+              <Ionicons name="close" size={24} color="#666" />
+            </TouchableOpacity>
+          </View>
+          <ChatBot isModal={true} />
+        </View>
+      </View>
+    </Modal>
+  )
 
   return (
     <SafeAreaView className="flex-1 bg-backBlue">
@@ -95,9 +127,7 @@ const explore = () => {
             {/* Chat Icon */}
             <TouchableOpacity
               className="bg-white p-3 rounded-xl shadow-sm"
-              onPress={() => {
-                router.push('/(screens)/chatbot');
-              }}
+              onPress={() => setChatModalVisible(true)}
             >
               <Ionicons name="chatbubbles" size={22} color="#367AFF" />
             </TouchableOpacity>
@@ -127,6 +157,7 @@ const explore = () => {
             </View>
           </TouchableWithoutFeedback>
         </ScrollView>
+        <ChatModal />
       </View>
     </SafeAreaView>
   )

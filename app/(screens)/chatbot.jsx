@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { showMessage } from "react-native-flash-message";
 
-const ChatBot = () => {
+const ChatBot = ({ isModal = false }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -131,12 +131,13 @@ const ChatBot = () => {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-backBlue">
+    <View className={`flex-1 bg-backBlue ${isModal ? 'pt-0' : 'pt-4'}`}>
       <View className="flex-1 px-4 mb-4">
+      {!isModal && (
         <View className="flex-row items-center py-4">
           <Text className="text-2xl font-bold flex-1">Travel Assistant</Text>
         </View>
-
+      )}
         <FlatList
           ref={flatListRef}
           data={messages}
@@ -178,8 +179,9 @@ const ChatBot = () => {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
+        
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
