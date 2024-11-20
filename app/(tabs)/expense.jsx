@@ -52,7 +52,7 @@ const Expense = () => {
         >
           <Image 
               source={icons.exchange} 
-              className="w-6 h-6"
+              className="w-7 h-7"
           />
         </TouchableOpacity>
       </View>

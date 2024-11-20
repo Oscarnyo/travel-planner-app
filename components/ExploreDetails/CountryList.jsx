@@ -25,7 +25,7 @@ const CountryList = () => {
   }
 
   return (
-    <View className="mt-4 mb-2 z-0">
+    <View className=" mb-2 z-0">
       <View className="flex-row items-center mb-3">
         <Ionicons name="earth" size={22} color="#367AFF" />
         <Text className="font-bold text-[20px] ml-2">Popular Destinations</Text>

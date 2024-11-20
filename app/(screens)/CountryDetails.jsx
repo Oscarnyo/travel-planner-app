@@ -151,7 +151,7 @@ const CountryDetails = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-backBlue p-4">
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} >
         {/* Header Image */}
         <View className="h-[300]">
           {params.photoUrl ? (

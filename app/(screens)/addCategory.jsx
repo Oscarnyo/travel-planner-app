@@ -7,8 +7,9 @@ import { collection, addDoc } from 'firebase/firestore'
 import { router } from 'expo-router'
 
 const COLORS = [
-  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD',
-  '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'
+  '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#F5D454',
+  '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71',
+  '#BAF9FC', '#E1D5FF'
 ]
 
 const AddCategory = () => {

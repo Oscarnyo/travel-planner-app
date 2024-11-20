@@ -7,7 +7,8 @@ module.exports = {
         backBlue:'#E5E8F8',
         secondary:'#367AFF',
         colorGray:'#d9dbe6',
-        borderGrey:'#D9D9D9'
+        borderGrey:'#D9D9D9',
+        cardBlue:'#d2d7f0'
       },
     },
   },

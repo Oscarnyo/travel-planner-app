@@ -109,7 +109,7 @@ const profile = () => {
               <CustomButton
                 title="Save"
                 handlePress={handleChangePassword}
-                containerStyles="bg-secondary mt-14 w-[220px]"
+                containerStyles="bg-secondary mt-14 w-[220px] h-[50px]"
                 textStyles="text-lg text-[20px]"
                 isLoading={isLoading}
               />

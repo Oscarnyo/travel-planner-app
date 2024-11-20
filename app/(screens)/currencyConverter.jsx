@@ -122,7 +122,7 @@ const CurrencyConverter = () => {
           </TouchableOpacity>
         </View>
   
-        <View className="bg-white rounded-xl p-4 mb-4 shadow-lg">
+        <View className="bg-white rounded-xl p-4 mb-4 shadow-lg h-[250px]">
           <TextInput
             className="border-b border-gray-300 p-2 mb-4"
             placeholder="Amount"
@@ -131,7 +131,7 @@ const CurrencyConverter = () => {
             keyboardType="numeric"
           />
   
-          <View className="flex-row justify-between mb-4">
+          <View className="flex-row justify-between mb-8 mt-5">
             <TouchableOpacity 
               className="bg-gray-100 p-3 rounded-xl flex-1 mr-2"
               onPress={() => {

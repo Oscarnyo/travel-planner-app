@@ -17,7 +17,7 @@ export default function App() {
   }
 
   if (user) {
-    return <Redirect href="/(tabs)/expense" />;
+    return <Redirect href="/(tabs)/explore" />;
   } else {
     return <Redirect href="/sign-in" />;
   }

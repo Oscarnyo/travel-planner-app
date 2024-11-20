@@ -27,8 +27,6 @@ const explore = () => {
   
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    // Add your refresh logic here
-    // For example, re-fetch data for CountryList, PlaceList, HotelItemList, and RestaurantList
     setTimeout(() => {
       setRefreshing(false);
     }, 500);
@@ -76,10 +74,8 @@ const explore = () => {
   return (
     <SafeAreaView className="flex-1 bg-backBlue">
       <View className="flex-1">
-        {/* Fixed Header */}
-        <View className="px-4 pt-4 bg-backBlue">
+        <View className="px-4 pt-4 pb-4 bg-backBlue">
           <View className="flex-row items-center justify-between">
-            {/* Search Bar */}
             <View className="flex-1 mr-4">
               <GooglePlacesAutocomplete
                 placeholder='Search places...'
@@ -104,9 +100,10 @@ const explore = () => {
                     borderRadius: 12,
                   },
                   textInput: {
-                    height: 42,
+                    height: 41,
                     color: '#5d5d5d',
                     fontSize: 16,
+                    alignItems: 'center',
                     backgroundColor: 'transparent',
                   },
                   listView: {
@@ -131,14 +128,21 @@ const explore = () => {
             >
               <Ionicons name="chatbubbles" size={22} color="#367AFF" />
             </TouchableOpacity>
+
+            {/* Translate Icon */}
+            <TouchableOpacity
+              className="bg-white p-3 rounded-xl shadow-sm ml-2"
+              onPress={() => router.push('/(screens)/translate')}
+            >
+              <Ionicons name="language" size={22} color="#367AFF" />
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* Scrollable Content */}
         <ScrollView 
           className="flex-1 px-4"
           showsVerticalScrollIndicator={false}
-          style={{ marginTop: isSearchFocused ? 230 : 0 }} // Add space when search is focused
+          style={{ marginTop: isSearchFocused ? 230 : 0 }}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

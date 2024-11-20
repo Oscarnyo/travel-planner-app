@@ -34,6 +34,7 @@ const RootLayout = () => {
       <Stack.Screen name="(screens)/expenseDetails" options={{ headerShown: false, headerTransparent:true, headerTitle:''}} />
       <Stack.Screen name="(screens)/addCategory" options={{ headerShown: false, headerTransparent:true, headerTitle:''}} />
       <Stack.Screen name="(screens)/currencyConverter" options={{ headerShown: false, headerTransparent:true, headerTitle:'Currency Converter'}} />
+      <Stack.Screen name="(screens)/translate" options={{ headerShown: false, headerTransparent:true, headerTitle:'Translate'}} />
     </Stack>
     </createTripContext.Provider>
   </AuthProvider>
