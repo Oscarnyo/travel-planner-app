@@ -31,14 +31,32 @@ const Expense = () => {
     }
   }, [])
 
-  const chartData = categories.map(category => ({
-    name: category.name,
-    spending: category.currentSpending || 0,
-    color: category.color,
-    legendFontColor: '#7F7F7F',
-    legendFontSize: 15,
-    legendFontFamily: 'System',  // Add this to ensure consistent font
-  }))
+  const chartData = categories.length > 0 
+  ? categories.some(category => (category.currentSpending || 0) > 0)
+    ? categories.map(category => ({
+        name: category.name,
+        spending: category.currentSpending || 0,
+        color: category.color,
+        legendFontColor: '#7F7F7F',
+        legendFontSize: 15,
+        legendFontFamily: 'System',
+      }))
+    : [{
+        name: 'No expenses yet',
+        spending: 1,
+        color: '#E5E7EB', // light grey color
+        legendFontColor: '#7F7F7F',
+        legendFontSize: 15,
+        legendFontFamily: 'System',
+      }]
+  : [{
+      name: 'No categories',
+      spending: 1,
+      color: '#E5E7EB', // light grey color
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 15,
+      legendFontFamily: 'System',
+    }];
 
   return (
     <SafeAreaView className="flex-1 bg-backBlue">
@@ -79,7 +97,7 @@ const Expense = () => {
             backgroundColor="transparent"
             paddingLeft="15"
             absolute={false}
-            hasLegend={true}
+            hasLegend={categories.length > 0 && categories.some(category => (category.          currentSpending || 0) > 0)}
           />
           <Text className="text-center text-lg mt-2">
             Total: RM {totalSpending.toFixed(2)}

@@ -1,14 +1,19 @@
 import { View, Text, FlatList, ActivityIndicator } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
 import * as Location from 'expo-location'
 import RestaurantItem from './RestaurantItem'
 import { Ionicons } from '@expo/vector-icons'
 import { GOOGLE_MAPS_API_KEY } from '@env'
 
-const RestaurantList = () => {
+const RestaurantList = forwardRef((props, ref) => {
   const [restaurants, setRestaurants] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  
+  useImperativeHandle(ref, () => ({
+    fetchNearbyRestaurants
+  }));
+
 
   useEffect(() => {
     fetchNearbyRestaurants()
@@ -112,6 +117,6 @@ const RestaurantList = () => {
       />
     </View>
   )
-}
+});
 
 export default RestaurantList

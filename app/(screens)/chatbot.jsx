@@ -1,6 +1,6 @@
 import { GOOGLE_GERMINI_API_KEY } from '@env';
 import * as GoogleGenerativeAI from "@google/generative-ai";
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { 
   View, 
   Text, 
@@ -15,39 +15,73 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { showMessage } from "react-native-flash-message";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ChatBot = ({ isModal = false }) => {
+const ChatBot = forwardRef(({ isModal = false, onClearChat }, ref) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef(null);
+  
+  useImperativeHandle(ref, () => ({
+    clearChat
+  }));
 
-  useEffect(() => {
-    const startChat = async () => {
-      const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(GOOGLE_GERMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = "You are a travel assistant. Provide a brief, friendly greeting and ask how you can help plan their perfect trip.";
-      
+   // Load saved messages when component mounts
+   useEffect(() => {
+    const loadMessages = async () => {
       try {
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
-        
-        showMessage({
-          message: "Welcome! 🌍✈️",
-          description: "Your travel assistant is ready to help",
-          type: "info",
-          icon: "info",
-          duration: 2000,
-        });
-        
-        setMessages([{ text, user: false }]);
+        const savedMessages = await AsyncStorage.getItem('chatMessages');
+        if (savedMessages) {
+          setMessages(JSON.parse(savedMessages));
+        } else {
+          // If no saved messages, start new chat
+          startChat();
+        }
       } catch (error) {
-        console.error('Startup Error:', error);
+        console.error('Error loading messages:', error);
+        startChat(); // Fallback to new chat if loading fails
       }
     };
-    
-    startChat();
+    loadMessages();
   }, []);
+
+  // Save messages whenever they change
+  useEffect(() => {
+    const saveMessages = async () => {
+      try {
+        await AsyncStorage.setItem('chatMessages', JSON.stringify(messages));
+      } catch (error) {
+        console.error('Error saving messages:', error);
+      }
+    };
+    if (messages.length > 0) {
+      saveMessages();
+    }
+  }, [messages]);
+
+  const startChat = async () => {
+    const genAI = new GoogleGenerativeAI.GoogleGenerativeAI(GOOGLE_GERMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const prompt = "You are a travel assistant. Provide a brief, friendly greeting and ask how you can help plan their perfect trip.";
+    
+    try {
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      
+      showMessage({
+        message: "Welcome! 🌍✈️",
+        description: "Your travel assistant is ready to help",
+        type: "info",
+        icon: "info",
+        duration: 2000,
+      });
+      
+      setMessages([{ text, user: false }]);
+    } catch (error) {
+      console.error('Startup Error:', error);
+    }
+  };
 
   const sendMessage = async () => {
     if (!inputText.trim()) return;
@@ -129,15 +163,21 @@ const ChatBot = ({ isModal = false }) => {
       </Text>
     </View>
   );
+  
+  const clearChat = async () => {
+    try {
+      await AsyncStorage.removeItem('chatMessages');
+      setMessages([]);
+      startChat(); // Restart chat with initial greeting
+      if (onClearChat) onClearChat(); // Call the parent's callback if provided
+    } catch (error) {
+      console.error('Error clearing chat:', error);
+    }
+  };
 
   return (
     <View className={`flex-1 bg-backBlue ${isModal ? 'pt-0' : 'pt-4'}`}>
       <View className="flex-1 px-4 mb-4">
-      {!isModal && (
-        <View className="flex-row items-center py-4">
-          <Text className="text-2xl font-bold flex-1">Travel Assistant</Text>
-        </View>
-      )}
         <FlatList
           ref={flatListRef}
           data={messages}
@@ -146,7 +186,7 @@ const ChatBot = ({ isModal = false }) => {
           className="flex-1"
           onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
           onLayout={() => flatListRef.current?.scrollToEnd()}
-          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
         />
 
         <KeyboardAvoidingView
@@ -183,6 +223,6 @@ const ChatBot = ({ isModal = false }) => {
       </View>
     </View>
   );
-};
+});
 
 export default ChatBot;

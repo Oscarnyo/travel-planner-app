@@ -1,15 +1,20 @@
 import { View, Text, FlatList, ActivityIndicator } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react'
 import * as Location from 'expo-location'
 import HotelItem from './HotelItem'
 import { Ionicons } from '@expo/vector-icons'
 import { GOOGLE_MAPS_API_KEY } from '@env'
 
 
-const HotelItemList = () => {
+const HotelItemList = forwardRef((props, ref) => {
   const [hotels, setHotels] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  
+  useImperativeHandle(ref, () => ({
+    fetchNearbyHotels
+  }));
+
 
   useEffect(() => {
     fetchNearbyHotels()
@@ -115,6 +120,6 @@ const HotelItemList = () => {
       />
     </View>
   )
-}
+});
 
 export default HotelItemList

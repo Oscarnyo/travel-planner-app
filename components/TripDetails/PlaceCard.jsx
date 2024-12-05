@@ -101,7 +101,7 @@ const PlaceCard = ({ place, tripId, dayIndex, placeIndex, tripDetails }) => {
                 </Text>
                 
                 <View className='flex-row justify-between items-center'>
-                        <Text className='font-normal text-[15px] mb-1 mt-1'>
+                        <Text className='font-normal text-[15px] mb-1 mt-1 w-[250px]'>
                             🎟️ Ticket Price: 
                             <Text className='font-normal text-gray-500'> {place.ticket_pricing}</Text>
                         </Text>

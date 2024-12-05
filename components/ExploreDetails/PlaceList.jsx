@@ -1,13 +1,18 @@
 import { View, Text, FlatList } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import * as Location from 'expo-location'
 import { GOOGLE_MAPS_API_KEY } from '@env'
 import PlaceItem from './PlaceItem'
 import { Ionicons } from '@expo/vector-icons'
 
-const PlaceList = () => {
+const PlaceList = forwardRef((props, ref) => {
   const [places, setPlaces] = useState([])
   const [loading, setLoading] = useState(true)
+  
+  // Expose the fetch method via ref
+  useImperativeHandle(ref, () => ({
+    fetchNearbyPlaces
+  }));
 
   useEffect(() => {
     fetchNearbyPlaces()
@@ -61,6 +66,6 @@ const PlaceList = () => {
       />
     </View>
   )
-}
+});
 
 export default PlaceList

@@ -1,4 +1,13 @@
-import { View, Text, TouchableOpacity, Linking, Image, Alert, ToastAndroid} from 'react-native'
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  Linking, 
+  Image, 
+  Alert, 
+  ToastAndroid, 
+  ActivityIndicator 
+} from 'react-native'
 import React, { useState, useEffect, useContext } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MapView, { Marker, Callout }  from 'react-native-maps'
@@ -19,6 +28,7 @@ const Map = () => {
   const [errorMsg, setErrorMsg] = useState(null)
   const [selectedPlace, setSelectedPlace] = useState(null)
   const [favorites, setFavorites] = useState([]);
+  const [isMapReady, setIsMapReady] = useState(false)
   const mapRef = React.useRef(null);
   const { user } = useContext(AuthContext);
   
@@ -46,8 +56,8 @@ const Map = () => {
       }
 
       let location = await Location.getCurrentPositionAsync({})
-      console.log('Current location:', location)
       setLocation(location)
+      setIsMapReady(true)
     })()
   }, [])
   
@@ -185,14 +195,13 @@ const Map = () => {
     );
   };
   
-  return (
-    <SafeAreaView className="flex-1 bg-backBlue">
-      <TouchableWithoutFeedback onPress={() => {
-      Keyboard.dismiss();
-      this.googlePlacesAutocomplete?.blur();
-    }}>
-      <View className="flex-1">
-      <GooglePlacesAutocomplete
+   // Render the UI elements only when the map is ready
+   const renderMapUI = () => {
+    if (!isMapReady) return null;
+
+    return (
+      <>
+        <GooglePlacesAutocomplete
           placeholder='Search'
           onPress={(data, details = null) => {
           const selectedPlace = {
@@ -286,49 +295,65 @@ const Map = () => {
       >
       <Ionicons name="star" size={24} color="#FFD700" />
       </TouchableOpacity>
-    
-      {errorMsg ? (
-          <Text className="text-red-500 text-center">{errorMsg}</Text>
-        ) : location ? (
-          <View className="flex-1">
-            <MapView
-              ref={mapRef}
-              className="flex-1"
-              initialRegion={{
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-              onPress={handleMapPress}
-              showsUserLocation={true}
-              followsUserLocation={true}
-              showsPointsOfInterest={true}
-              onPoiClick={(e) => handleMapPress(e)}
-            >
-              {selectedPlace && (
-                <Marker 
-                  coordinate={selectedPlace.coordinate}
-                  title={selectedPlace.name}
-                  description={selectedPlace.address}
-                />
-              )}
-            </MapView>
-            
-            <PlaceDetailsCard 
-            place={selectedPlace} 
-            onToggleFavorite={handleToggleFavorite} 
-            favorites={favorites} 
-            />
-            
-          </View>
-        ) : (
-          <Text className="text-center">Loading...</Text>
-        )}
-      </View>
+      </>
+    )
+  }
+  
+  
+  return (
+    <SafeAreaView className="flex-1 bg-backBlue">
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View className="flex-1">
+          {errorMsg ? (
+            <Text className="text-red-500 text-center">{errorMsg}</Text>
+          ) : location ? (
+            <View className="flex-1">
+              <MapView
+                ref={mapRef}
+                className="flex-1"
+                initialRegion={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+                mapPadding={{
+                  top: 55,
+                  right: 0,
+                  bottom: 0,
+                  left: 0
+                }}
+                onPress={handleMapPress}
+                showsUserLocation={true}
+                followsUserLocation={true}
+                showsPointsOfInterest={true}
+                onPoiClick={(e) => handleMapPress(e)}
+              >
+                {selectedPlace && (
+                  <Marker 
+                    coordinate={selectedPlace.coordinate}
+                    title={selectedPlace.name}
+                    description={selectedPlace.address}
+                  />
+                )}
+              </MapView>
+              {renderMapUI()}
+              <PlaceDetailsCard 
+                place={selectedPlace} 
+                onToggleFavorite={handleToggleFavorite} 
+                favorites={favorites} 
+              />
+            </View>
+          ) : (
+            <View className="flex-1 justify-center items-center">
+              <ActivityIndicator size="large" color="#367AFF" />
+              <Text className="mt-2">Loading map...</Text>
+            </View>
+          )}
+        </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
-  );
+  )
 }
 
 export default Map

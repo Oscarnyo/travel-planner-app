@@ -105,7 +105,7 @@ const TripsDetails = () => {
                         </View>
                         
                         {/* Flight Ingfo */}
-                        <FlightInfo flightData={tripDetails?.tripPlan?.flight_details}/>
+                        {/* <FlightInfo flightData={tripDetails?.tripPlan?.flight_details}/> */}
                     
                     
                         {/* Hotels list */}

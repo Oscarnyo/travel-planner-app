@@ -59,7 +59,7 @@ const ForgotPassword = () => {
           <CustomButton
             title='Reset Password'
             handlePress={handleResetPassword}
-            containerStyles="mt-7"
+            containerStyles="mt-7 h-[55px]"
             isLoading={isLoading}
           />
           

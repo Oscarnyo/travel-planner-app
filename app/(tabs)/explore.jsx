@@ -8,7 +8,7 @@ import {
   RefreshControl,
   Modal 
 } from 'react-native'
-import React, { useState, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef, forwardRef, useImperativeHandle } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
@@ -20,16 +20,30 @@ import HotelItemList from '../../components/ExploreDetails/HotelItemList'
 import RestaurantList from '../../components/ExploreDetails/RestaurantList'
 import ChatBot from '../(screens)/chatbot'
 
-const explore = () => {
+const Explore = () => {
+  const placeListRef = useRef(null);
+  const hotelListRef = useRef(null);
+  const restaurantListRef = useRef(null);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [chatModalVisible, setChatModalVisible] = useState(false)
+  const [chatModalVisible, setChatModalVisible] = useState(false);
+  const chatBotRef = useRef(null);
   
-  const onRefresh = useCallback(() => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    setTimeout(() => {
+    
+    try {
+      // Refresh all lists concurrently
+      await Promise.all([
+        placeListRef.current?.fetchNearbyPlaces(),
+        hotelListRef.current?.fetchNearbyHotels(),
+        restaurantListRef.current?.fetchNearbyRestaurants()
+      ]);
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
       setRefreshing(false);
-    }, 500);
+    }
   }, []);
   
   const handlePlaceSelect = (data, details) => {
@@ -61,15 +75,27 @@ const explore = () => {
         <View className="bg-backBlue rounded-t-3xl h-[90%] mt-auto">
           <View className="flex-row justify-between items-center p-4">
             <Text className="text-xl font-bold">Travel Assistant</Text>
-            <TouchableOpacity onPress={() => setChatModalVisible(false)}>
-              <Ionicons name="close" size={24} color="#666" />
-            </TouchableOpacity>
+            <View className="flex-row items-center">
+              <TouchableOpacity 
+                onPress={() => {
+                  if (chatBotRef.current) {
+                    chatBotRef.current.clearChat();
+                  }
+                }}
+                className="mr-4"
+              >
+                <Ionicons name="trash-outline" size={20} color="#666" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setChatModalVisible(false)}>
+                <Ionicons name="close" size={24} color="#666" />
+              </TouchableOpacity>
+            </View>
           </View>
-          <ChatBot isModal={true} />
+          <ChatBot ref={chatBotRef} isModal={true} />
         </View>
       </View>
     </Modal>
-  )
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-backBlue">
@@ -155,9 +181,9 @@ const explore = () => {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View className="flex-1">
               <CountryList />
-              <PlaceList />
-              <HotelItemList />
-              <RestaurantList />
+              <PlaceList ref={placeListRef} />
+              <HotelItemList ref={hotelListRef} />
+              <RestaurantList ref={restaurantListRef} />
             </View>
           </TouchableWithoutFeedback>
         </ScrollView>
@@ -167,4 +193,4 @@ const explore = () => {
   )
 }
 
-export default explore
+export default Explore

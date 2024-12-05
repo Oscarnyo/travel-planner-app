@@ -5,12 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, getDoc, query, where } from "firebase/firestore";
 import { sendPasswordResetEmail as firebaseSendPasswordResetEmail } from "firebase/auth";
 import { v4 as uuidv4 } from 'uuid';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import {FIREBASE_API_KEY} from "@env";
 
-// Your web app's Firebase configuration
+// web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDIdhwjN-ZauQmpPMJC3tTDbxAAEBHzq1Y",
+  apiKey: FIREBASE_API_KEY,
   authDomain: "travel-planner-9d3c3.firebaseapp.com",
   projectId: "travel-planner-9d3c3",
   storageBucket: "travel-planner-9d3c3.appspot.com",
@@ -33,6 +32,7 @@ if (getApps().length === 0) {
 }
 
 db = getFirestore(app);
+
 
 export const signUp = async (email, password, username) => {
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
