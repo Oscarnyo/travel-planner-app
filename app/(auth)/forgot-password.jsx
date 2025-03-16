@@ -14,17 +14,57 @@ const ForgotPassword = () => {
 
   const handleResetPassword = async () => {
     if (!email) {
-      Alert.alert('Error', 'Please enter your email address')
+      Alert.alert(
+        'Missing Information',
+        'Please enter your email address'
+      )
       return
     }
-
+  
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      Alert.alert(
+        'Invalid Email',
+        'Please enter a valid email address'
+      )
+      return
+    }
+  
     setIsLoading(true)
     try {
       await sendPasswordResetEmail(email)
-      Alert.alert('Success', 'Password reset email sent. Please check your inbox.')
-      router.replace('/sign-in')
+      Alert.alert(
+        'Success',
+        'If an account exists with this email, you will receive a password reset link. Please check your inbox.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setEmail('')
+              router.replace('/sign-in')
+            }
+          }
+        ]
+      )
     } catch (error) {
-      Alert.alert('Error', error.message)
+      console.log('Reset password error:', error)
+      if (error.code === 'auth/invalid-email') {
+        Alert.alert(
+          'Invalid Email',
+          'Please enter a valid email address.'
+        )
+      } else if (error.code === 'auth/too-many-requests') {
+        Alert.alert(
+          'Too Many Attempts',
+          'Too many password reset attempts. Please try again later.'
+        )
+      } else {
+        Alert.alert(
+          'Error',
+          'Failed to send reset email. Please try again.'
+        )
+      }
     } finally {
       setIsLoading(false)
     }

@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -11,8 +11,40 @@ const AddExpense = () => {
   const [amount, setAmount] = useState('')
 
   const handleAddExpense = async () => {
-    if (!name || !amount) return
-
+    // Input validation
+    if (!name && !amount) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter both expense name and amount'
+      )
+      return
+    }
+  
+    if (!name) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter the expense name'
+      )
+      return
+    }
+  
+    if (!amount) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter the expense amount'
+      )
+      return
+    }
+  
+    // Validate amount is a valid number
+    if (isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+      Alert.alert(
+        'Invalid Amount',
+        'Please enter a valid amount greater than 0'
+      )
+      return
+    }
+  
     try {
       const categoryRef = doc(db, "expenseCategories", params.categoryId)
       const categoryDoc = await getDoc(categoryRef)
@@ -30,6 +62,10 @@ const AddExpense = () => {
         router.back()
       }
     } catch (error) {
+      Alert.alert(
+        'Error',
+        'Failed to add expense. Please try again.'
+      )
       console.error("Error adding expense:", error)
     }
   }

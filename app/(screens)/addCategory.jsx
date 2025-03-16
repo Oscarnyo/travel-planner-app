@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
@@ -19,6 +19,48 @@ const AddCategory = () => {
   const [budget, setBudget] = useState('')
 
   const handleCreate = async () => {
+    // Input validation
+    if (!icon && !name && !budget) {
+      Alert.alert(
+        'Missing Information',
+        'Please fill in all fields (Icon, Category Name, and Budget)'
+      )
+      return
+    }
+  
+    if (!icon) {
+      Alert.alert(
+        'Missing Information',
+        'Please add an icon (emoji) for your category'
+      )
+      return
+    }
+  
+    if (!name) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter a name for your category'
+      )
+      return
+    }
+  
+    if (!budget) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter a budget amount'
+      )
+      return
+    }
+  
+    // Validate budget is a valid number
+    if (isNaN(parseFloat(budget)) || parseFloat(budget) <= 0) {
+      Alert.alert(
+        'Invalid Budget',
+        'Please enter a valid budget amount greater than 0'
+      )
+      return
+    }
+  
     try {
       const user = auth.currentUser
       await addDoc(collection(db, "expenseCategories"), {
@@ -32,6 +74,10 @@ const AddCategory = () => {
       })
       router.back()
     } catch (error) {
+      Alert.alert(
+        'Error',
+        'Failed to create category. Please try again.'
+      )
       console.error("Error creating category:", error)
     }
   }

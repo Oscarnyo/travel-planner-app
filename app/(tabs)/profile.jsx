@@ -44,19 +44,82 @@ const profile = () => {
   }
   
   const handleChangePassword = async () => {
-    if (!oldPassword || !newPassword) {
-      Alert.alert('Error', 'Please fill in both password fields')
+    // Input validation with specific messages
+    if (!oldPassword && !newPassword) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter both your old and new password'
+      )
       return
     }
-
+    
+    if (!oldPassword) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter your old password'
+      )
+      return
+    }
+  
+    if (!newPassword) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter your new password'
+      )
+      return
+    }
+  
+    // Password strength validation
+    if (newPassword.length < 6) {
+      Alert.alert(
+        'Weak Password',
+        'Your new password must be at least 6 characters long'
+      )
+      return
+    }
+  
+    if (oldPassword === newPassword) {
+      Alert.alert(
+        'Invalid Password',
+        'New password must be different from your old password'
+      )
+      return
+    }
+  
     setIsLoading(true)
     try {
       await changePassword(oldPassword, newPassword)
-      Alert.alert('Success', 'Password changed successfully')
-      setOldPassword('')
-      setNewPassword('')
+      Alert.alert(
+        'Success',
+        'Your password has been changed successfully. Please use your new password next time you login.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setOldPassword('')
+              setNewPassword('')
+            }
+          }
+        ]
+      )
     } catch (error) {
-      Alert.alert('Error', error.message)
+      if (error.message === 'The old password is incorrect') {
+        Alert.alert(
+          'Incorrect Password',
+          'The old password you entered is incorrect. Please verify and try again.',
+          [
+            {
+              text: 'OK',
+              onPress: () => setOldPassword('')
+            }
+          ]
+        )
+      } else {
+        Alert.alert(
+          'Error',
+          error.message || 'Failed to change password. Please try again.'
+        )
+      }
     } finally {
       setIsLoading(false)
     }

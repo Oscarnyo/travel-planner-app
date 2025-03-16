@@ -20,22 +20,98 @@ const SignUp = () => {
   
   
   const handleSignUp = async () => {
-    if (!username || !email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
+    // Input validation
+    if (!username && !email && !password) {
+      Alert.alert(
+        'Missing Information',
+        'Please fill in all required fields'
+      )
+      return
     }
   
-    setIsLoading(true);
-    try {
-      await signUp(email, password, username);
-      Alert.alert('Success', 'Account created successfully');
-      router.replace('sign-in');
-    } catch (error) {
-      Alert.alert('Error', error.message);
-    } finally {
-      setIsLoading(false);
+    if (!username) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter a username'
+      )
+      return
     }
-    };
+  
+    if (!email) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter your email'
+      )
+      return
+    }
+  
+    if (!password) {
+      Alert.alert(
+        'Missing Information',
+        'Please enter a password'
+      )
+      return
+    }
+  
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      Alert.alert(
+        'Invalid Email',
+        'Please enter a valid email address'
+      )
+      return
+    }
+  
+    // Password strength validation
+    if (password.length < 6) {
+      Alert.alert(
+        'Weak Password',
+        'Password must be at least 6 characters long'
+      )
+      return
+    }
+  
+    setIsLoading(true)
+    try {
+      await signUp(email, password, username)
+      Alert.alert(
+        'Success',
+        'Account created successfully! Please sign in with your new account.',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setEmail('')
+              setPassword('')
+              setUserame('')
+              router.replace('sign-in')
+            }
+          }
+        ]
+      )
+    } catch (error) {
+      console.log('Sign up error:', error)
+      if (error.code === 'auth/email-already-in-use') {
+        Alert.alert(
+          'Email Already Exists',
+          'An account with this email already exists. Please use a different email or sign in.'
+        )
+      } else if (error.code === 'auth/invalid-email') {
+        Alert.alert(
+          'Invalid Email',
+          'Please enter a valid email address.'
+        )
+      } else {
+        Alert.alert(
+          'Error',
+          'Failed to create account. Please try again.'
+        )
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
   
   return (
     <SafeAreaView className="h-full bg-backBlue">
@@ -80,7 +156,7 @@ const SignUp = () => {
           <CustomButton
             title='Sign up'
             handlePress={handleSignUp}
-            containerStyles="mt-7 h-[50px]"
+            containerStyles="mt-7 h-[55px]"
             isLoading={isLoading}
           />
           
