@@ -1,6 +1,3 @@
-Here is your `README.md` file formatted in GitHub Markdown:  
-
-```markdown
 # Travel Planner Mobile Application
 
 A comprehensive travel planning mobile application built with React Native and Expo. This application helps users plan their trips, manage expenses, convert currencies, translate languages, and explore destinations with integrated maps and place details.
