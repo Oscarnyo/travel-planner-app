@@ -102,7 +102,6 @@ Scan the QR code on the terminal
 
 - iOS (including tablet support)
 - Android
-- Web (basic support)
 
 ## 🔧 Development Tools
 
