@@ -1,4 +1,4 @@
-# Travel Planner Mobile Application
+# Travel Planner Mobile Application ( Final Year Project)
 
 A comprehensive travel planning mobile application built with React Native and Expo. This application helps users plan their trips, manage expenses, convert currencies, translate languages, and explore destinations with integrated maps and place details.
 
@@ -100,7 +100,6 @@ Scan the QR code on the terminal
 
 ## 📱 Platform Support
 
-- iOS (including tablet support)
 - Android
 
 ## 🔧 Development Tools
